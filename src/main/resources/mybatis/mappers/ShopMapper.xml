@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mhc.yunxian.dao.ShopMapper">
+    <resultMap id="BaseResultMap" type="com.mhc.yunxian.dao.model.Shop">
+        <id column="shop_id" jdbcType="BIGINT" property="shopId"/>
+        <result column="shopkeeper_open_id" jdbcType="VARCHAR" property="shopkeeperOpenId"/>
+        <result column="shopkeeper_nickname" jdbcType="VARCHAR" property="shopkeeperNickname"/>
+        <result column="shop_name" jdbcType="VARCHAR" property="shopName"/>
+        <result column="shop_intro" jdbcType="VARCHAR" property="shopIntro"/>
+        <result column="shop_head_picture" jdbcType="VARCHAR" property="shopHeadPicture"/>
+        <result column="shop_qr_code" jdbcType="VARCHAR" property="shopQrCode"/>
+        <result column="shop_finished_order" jdbcType="BIGINT" property="shopFinishedOrder"/>
+        <result column="repurchase_order_count" jdbcType="BIGINT" property="repurchaseOrderCount"/>
+        <result column="followers_count" jdbcType="BIGINT" property="followersCount"/>
+        <result column="longitude" jdbcType="VARCHAR" property="longitude"/>
+        <result column="latitude" jdbcType="VARCHAR" property="latitude"/>
+        <result column="show_addr" jdbcType="VARCHAR" property="showAddr"/>
+        <result column="monthly_finished_order" jdbcType="BIGINT" property="monthlyFinishedOrder"/>
+        <result column="monthly_sales" jdbcType="INTEGER" property="monthlySales"/>
+        <result column="already_withdraw_cash" jdbcType="INTEGER" property="alreadyWithdrawCash"/>
+        <result column="can_withdraw_cash" jdbcType="INTEGER" property="canWithdrawCash"/>
+        <result column="today_finished_order" jdbcType="BIGINT" property="todayFinishedOrder"/>
+        <result column="turnover_today" jdbcType="INTEGER" property="turnoverToday"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="is_deleted" jdbcType="BIT" property="isDeleted"/>
+        <result column="json_attribute" jdbcType="VARCHAR" property="jsonAttribute"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        shop_id, shopkeeper_open_id, shopkeeper_nickname, shop_name, shop_intro, shop_head_picture,
+        shop_qr_code, shop_finished_order, repurchase_order_count, followers_count, longitude,
+        latitude, show_addr, monthly_finished_order, monthly_sales, already_withdraw_cash,
+        can_withdraw_cash, today_finished_order, turnover_today, `status`, is_deleted,
+        json_attribute,gmt_create,gmt_modified
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_shop
+        where shop_id = #{shopId,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from tbl_shop
+        where shop_id = #{shopId,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.mhc.yunxian.dao.model.Shop" useGeneratedKeys="true" keyColumn="shop_id"
+            keyProperty="shopId">
+        insert into tbl_shop (shop_id, shopkeeper_open_id, shopkeeper_nickname,
+        shop_name, shop_intro, shop_head_picture,
+        shop_qr_code, shop_finished_order, repurchase_order_count,
+        followers_count, longitude, latitude,
+        show_addr, monthly_finished_order, monthly_sales,
+        already_withdraw_cash, can_withdraw_cash, today_finished_order,
+        turnover_today, `status`, is_deleted,
+        json_attribute,gmt_create,gmt_modified)
+        values (#{shopId,jdbcType=BIGINT}, #{shopkeeperOpenId,jdbcType=VARCHAR}, #{shopkeeperNickname,jdbcType=VARCHAR},
+        #{shopName,jdbcType=VARCHAR}, #{shopIntro,jdbcType=VARCHAR}, #{shopHeadPicture,jdbcType=VARCHAR},
+        #{shopQrCode,jdbcType=VARCHAR}, #{shopFinishedOrder,jdbcType=BIGINT}, #{repurchaseOrderCount,jdbcType=BIGINT},
+        #{followersCount,jdbcType=BIGINT}, #{longitude,jdbcType=VARCHAR}, #{latitude,jdbcType=VARCHAR},
+        #{showAddr,jdbcType=VARCHAR}, #{monthlyFinishedOrder,jdbcType=BIGINT}, #{monthlySales,jdbcType=INTEGER},
+        #{alreadyWithdrawCash,jdbcType=INTEGER}, #{canWithdrawCash,jdbcType=INTEGER},
+        #{todayFinishedOrder,jdbcType=BIGINT},
+        #{turnoverToday,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{isDeleted,jdbcType=BIT},
+        #{jsonAttribute,jdbcType=VARCHAR},#{gmtCreate,jdbcType=TIMESTAMP},
+        #{gmtModified,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertSelective" parameterType="com.mhc.yunxian.dao.model.Shop" useGeneratedKeys="true"
+            keyColumn="shop_id" keyProperty="shopId">
+        insert into tbl_shop
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="shopId != null">
+                shop_id,
+            </if>
+            <if test="shopkeeperOpenId != null">
+                shopkeeper_open_id,
+            </if>
+            <if test="shopkeeperNickname != null">
+                shopkeeper_nickname,
+            </if>
+            <if test="shopName != null">
+                shop_name,
+            </if>
+            <if test="shopIntro != null">
+                shop_intro,
+            </if>
+            <if test="shopHeadPicture != null">
+                shop_head_picture,
+            </if>
+            <if test="shopQrCode != null">
+                shop_qr_code,
+            </if>
+            <if test="shopFinishedOrder != null">
+                shop_finished_order,
+            </if>
+            <if test="repurchaseOrderCount != null">
+                repurchase_order_count,
+            </if>
+            <if test="followersCount != null">
+                followers_count,
+            </if>
+            <if test="longitude != null">
+                longitude,
+            </if>
+            <if test="latitude != null">
+                latitude,
+            </if>
+            <if test="showAddr != null">
+                show_addr,
+            </if>
+            <if test="monthlyFinishedOrder != null">
+                monthly_finished_order,
+            </if>
+            <if test="monthlySales != null">
+                monthly_sales,
+            </if>
+            <if test="alreadyWithdrawCash != null">
+                already_withdraw_cash,
+            </if>
+            <if test="canWithdrawCash != null">
+                can_withdraw_cash,
+            </if>
+            <if test="todayFinishedOrder != null">
+                today_finished_order,
+            </if>
+            <if test="turnoverToday != null">
+                turnover_today,
+            </if>
+            <if test="status != null">
+                `status`,
+            </if>
+            <if test="isDeleted != null">
+                is_deleted,
+            </if>
+            <if test="jsonAttribute != null">
+                json_attribute,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModified != null">
+                gmt_modified
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="shopId != null">
+                #{shopId,jdbcType=BIGINT},
+            </if>
+            <if test="shopkeeperOpenId != null">
+                #{shopkeeperOpenId,jdbcType=VARCHAR},
+            </if>
+            <if test="shopkeeperNickname != null">
+                #{shopkeeperNickname,jdbcType=VARCHAR},
+            </if>
+            <if test="shopName != null">
+                #{shopName,jdbcType=VARCHAR},
+            </if>
+            <if test="shopIntro != null">
+                #{shopIntro,jdbcType=VARCHAR},
+            </if>
+            <if test="shopHeadPicture != null">
+                #{shopHeadPicture,jdbcType=VARCHAR},
+            </if>
+            <if test="shopQrCode != null">
+                #{shopQrCode,jdbcType=VARCHAR},
+            </if>
+            <if test="shopFinishedOrder != null">
+                #{shopFinishedOrder,jdbcType=BIGINT},
+            </if>
+            <if test="repurchaseOrderCount != null">
+                #{repurchaseOrderCount,jdbcType=BIGINT},
+            </if>
+            <if test="followersCount != null">
+                #{followersCount,jdbcType=BIGINT},
+            </if>
+            <if test="longitude != null">
+                #{longitude,jdbcType=VARCHAR},
+            </if>
+            <if test="latitude != null">
+                #{latitude,jdbcType=VARCHAR},
+            </if>
+            <if test="showAddr != null">
+                #{showAddr,jdbcType=VARCHAR},
+            </if>
+            <if test="monthlyFinishedOrder != null">
+                #{monthlyFinishedOrder,jdbcType=BIGINT},
+            </if>
+            <if test="monthlySales != null">
+                #{monthlySales,jdbcType=INTEGER},
+            </if>
+            <if test="alreadyWithdrawCash != null">
+                #{alreadyWithdrawCash,jdbcType=INTEGER},
+            </if>
+            <if test="canWithdrawCash != null">
+                #{canWithdrawCash,jdbcType=VARCHAR},
+            </if>
+            <if test="todayFinishedOrder != null">
+                #{todayFinishedOrder,jdbcType=BIGINT},
+            </if>
+            <if test="turnoverToday != null">
+                #{turnoverToday,jdbcType=INTEGER},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=INTEGER},
+            </if>
+            <if test="isDeleted != null">
+                #{isDeleted,jdbcType=BIT},
+            </if>
+            <if test="jsonAttribute != null">
+                #{jsonAttribute,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModified != null">
+                #{gmtModified,jdbcType=TIMESTAMP}
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.mhc.yunxian.dao.model.Shop">
+        update tbl_shop
+        <set>
+            <if test="shopkeeperOpenId != null">
+                shopkeeper_open_id = #{shopkeeperOpenId,jdbcType=VARCHAR},
+            </if>
+            <if test="shopkeeperNickname != null">
+                shopkeeper_nickname = #{shopkeeperNickname,jdbcType=VARCHAR},
+            </if>
+            <if test="shopName != null">
+                shop_name = #{shopName,jdbcType=VARCHAR},
+            </if>
+            <if test="shopIntro != null">
+                shop_intro = #{shopIntro,jdbcType=VARCHAR},
+            </if>
+            <if test="shopHeadPicture != null">
+                shop_head_picture = #{shopHeadPicture,jdbcType=VARCHAR},
+            </if>
+            <if test="shopQrCode != null">
+                shop_qr_code = #{shopQrCode,jdbcType=VARCHAR},
+            </if>
+            <if test="shopFinishedOrder != null">
+                shop_finished_order = #{shopFinishedOrder,jdbcType=BIGINT},
+            </if>
+            <if test="repurchaseOrderCount != null">
+                repurchase_order_count = #{repurchaseOrderCount,jdbcType=BIGINT},
+            </if>
+            <if test="followersCount != null">
+                followers_count = #{followersCount,jdbcType=BIGINT},
+            </if>
+            <if test="longitude != null">
+                longitude = #{longitude,jdbcType=VARCHAR},
+            </if>
+            <if test="latitude != null">
+                latitude = #{latitude,jdbcType=VARCHAR},
+            </if>
+            <if test="showAddr != null">
+                show_addr = #{showAddr,jdbcType=VARCHAR},
+            </if>
+            <if test="monthlyFinishedOrder != null">
+                monthly_finished_order = #{monthlyFinishedOrder,jdbcType=BIGINT},
+            </if>
+            <if test="monthlySales != null">
+                monthly_sales = #{monthlySales,jdbcType=INTEGER},
+            </if>
+            <if test="alreadyWithdrawCash != null">
+                already_withdraw_cash = #{alreadyWithdrawCash,jdbcType=INTEGER},
+            </if>
+            <if test="canWithdrawCash != null">
+                can_withdraw_cash = #{canWithdrawCash,jdbcType=INTEGER},
+            </if>
+            <if test="todayFinishedOrder != null">
+                today_finished_order = #{todayFinishedOrder,jdbcType=BIGINT},
+            </if>
+            <if test="turnoverToday != null">
+                turnover_today = #{turnoverToday,jdbcType=INTEGER},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="isDeleted != null">
+                is_deleted = #{isDeleted,jdbcType=BIT},
+            </if>
+            <if test="jsonAttribute != null">
+                json_attribute = #{jsonAttribute,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModified != null">
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+            </if>
+        </set>
+        where shop_id = #{shopId,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.mhc.yunxian.dao.model.Shop">
+        update tbl_shop
+        set shopkeeper_open_id = #{shopkeeperOpenId,jdbcType=VARCHAR},
+        shopkeeper_nickname = #{shopkeeperNickname,jdbcType=VARCHAR},
+        shop_name = #{shopName,jdbcType=VARCHAR},
+        shop_intro = #{shopIntro,jdbcType=VARCHAR},
+        shop_head_picture = #{shopHeadPicture,jdbcType=VARCHAR},
+        shop_qr_code = #{shopQrCode,jdbcType=VARCHAR},
+        shop_finished_order = #{shopFinishedOrder,jdbcType=BIGINT},
+        repurchase_order_count = #{repurchaseOrderCount,jdbcType=BIGINT},
+        followers_count = #{followersCount,jdbcType=BIGINT},
+        longitude = #{longitude,jdbcType=VARCHAR},
+        latitude = #{latitude,jdbcType=VARCHAR},
+        show_addr = #{showAddr,jdbcType=VARCHAR},
+        monthly_finished_order = #{monthlyFinishedOrder,jdbcType=BIGINT},
+        monthly_sales = #{monthlySales,jdbcType=INTEGER},
+        already_withdraw_cash = #{alreadyWithdrawCash,jdbcType=INTEGER},
+        can_withdraw_cash = #{canWithdrawCash,jdbcType=INTEGER},
+        today_finished_order = #{todayFinishedOrder,jdbcType=BIGINT},
+        turnover_today = #{turnoverToday,jdbcType=INTEGER},
+        `status` = #{status,jdbcType=INTEGER},
+        is_deleted = #{isDeleted,jdbcType=BIT},
+        json_attribute = #{jsonAttribute,jdbcType=VARCHAR},
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+        gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        where shop_id = #{shopId,jdbcType=BIGINT}
+    </update>
+
+    <sql id="Query_Condition">
+        <trim prefix="AND" prefixOverrides="AND">
+            <if test="shopId != null">
+                AND shop_id = #{shopId,jdbcType=BIGINT}
+            </if>
+            <if test="shopkeeperOpenId != null">
+                AND shopkeeper_open_id = #{shopkeeperOpenId,jdbcType=VARCHAR}
+            </if>
+            <if test="shopkeeperNickname != null">
+                AND shopkeeper_nickname = #{shopkeeperNickname,jdbcType=VARCHAR}
+            </if>
+            <if test="shopName != null">
+                AND shop_name = #{shopName,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                AND `status` = #{status,jdbcType=INTEGER}
+            </if>
+            <if test="isDeleted != null">
+                is_deleted = #{isDeleted,jdbcType=BIT}
+            </if>
+
+        </trim>
+    </sql>
+
+    <sql id="Order_By_Sql_And_Limit">
+        <choose>
+            <when test="orderBySql != null">
+                ORDER BY ${orderBySql} DESC,gmt_create DESC
+            </when>
+            <otherwise>
+                ORDER BY gmt_modified DESC
+            </otherwise>
+        </choose>
+        <!--LIMIT #{offset},#{pageSize}-->
+    </sql>
+    <select id="queryShopInfo" parameterType="com.mhc.yunxian.bean.request.query.ShopInfoQuery"
+            resultMap="BaseResultMap">
+        select
+        *
+        from tbl_shop
+        where 1=1
+        <include refid="Query_Condition"/>
+        <include refid="Order_By_Sql_And_Limit"/>
+    </select>
+
+    <select id="getShopByKeeperOpenid" parameterType="java.lang.String"
+            resultMap="BaseResultMap">
+        select
+        *
+        from tbl_shop
+        where
+        <if test="openid != null">
+            shopkeeper_open_id = #{openid}
+        </if>
+    </select>
+    <select id="queryAll" resultMap="BaseResultMap">
+        select
+        *
+        from tbl_shop
+    </select>
+</mapper>

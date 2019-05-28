@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mhc.yunxian.dao.OrderGoodsDao">
+    <resultMap id="BaseResultMap" type="com.mhc.yunxian.dao.model.OrderGoodsInfo">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="openid" property="openid" jdbcType="VARCHAR"/>
+        <result column="goods_num" property="goodsNum" jdbcType="VARCHAR"/>
+        <result column="order_num" property="orderNum" jdbcType="VARCHAR"/>
+        <result column="goods_name" property="goodsName" jdbcType="VARCHAR"/>
+        <result column="goods_img" property="goodsImg" jdbcType="VARCHAR"/>
+        <result column="price" property="price" jdbcType="INTEGER"/>
+        <result column="real_price" property="realPrice" jdbcType="INTEGER"/>
+        <result column="buy_number" property="buyNumber" jdbcType="INTEGER"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="buy_weight" property="buyWeight" jdbcType="FLOAT"/>
+        <result column="limit_buy_num" property="limitBuyNum" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <resultMap id="OrderStatisticsListGoodsDetailMap" type="com.mhc.yunxian.bean.OrderStatisticsListGoodsDetail">
+        <result column="goods_name" property="goodsName" jdbcType="VARCHAR"/>
+        <result column="goods_img" property="goodsImg" jdbcType="VARCHAR"/>
+        <result column="real_price" property="realPrice" jdbcType="INTEGER"/>
+        <result column="buy_number" property="buyNumber" jdbcType="INTEGER"/>
+        <result column="specification" property="specification" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="myUserOrderGoodsMap" type="com.mhc.yunxian.bean.GetMyUserOrderGoods">
+        <result column="goods_name" property="goodsName" jdbcType="VARCHAR"/>
+        <result column="real_price" property="realPrice" jdbcType="INTEGER"/>
+        <result column="buy_number" property="buyNumber" jdbcType="INTEGER"/>
+        <result column="specification" property="specification" jdbcType="VARCHAR"/>
+    </resultMap>
+
+
+    <sql id="Base_Column_List">
+        id, openid, goods_num, order_num, price, buy_number, update_time,
+        create_time,buy_weight,goods_name,goods_img,limit_buy_num,real_price
+    </sql>
+
+
+    <select id="select" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_order_goods
+        where order_num = #{orderNum,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectLimitOrderGood" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_order_goods b
+        where b.limit_buy_num >0 and b.buy_number>0 and
+        b.order_num in
+        (select a.order_num from tbl_order_info a
+        where a.openid = #{arg0} and a.dragon_num = #{arg1}
+        and a.order_status in (0,1,2,3,4)
+        )
+    </select>
+
+    <select id="selectLimitNumber" resultType="java.lang.Integer" parameterType="java.lang.String">
+        select COALESCE(sum(a.buy_number),0) from tbl_order_goods a left JOIN tbl_order_info b on a.order_num =
+        b.order_num
+        left join tbl_dragon_info c on b.dragon_num = c.dragon_num
+        where b.openid = #{arg0} and c.dragon_num = #{arg1}
+        and a.buy_number > 0
+        and b.order_status in (0,1,2,3,4)
+    </select>
+
+
+    <select id="selectOrderStatisticsListGoodsDetail" resultMap="OrderStatisticsListGoodsDetailMap"
+            parameterType="java.lang.String">
+        SELECT
+        a.buy_number,
+        a.real_price,
+        a.goods_img,
+        a.goods_name,
+        b.specification
+        FROM
+        tbl_order_goods a
+        LEFT JOIN tbl_goods_info b ON a.goods_num = b.goods_num
+        where a.order_num = #{orderNum,jdbcType=VARCHAR}
+    </select>
+
+
+    <select id="selectMyUserOrderGoods" resultMap="myUserOrderGoodsMap" parameterType="java.lang.String">
+        SELECT
+        a.buy_number,
+        a.real_price,
+        a.goods_name,
+        b.specification
+        FROM
+        tbl_order_goods a
+        LEFT JOIN tbl_goods_info b ON a.goods_num = b.goods_num
+        where a.order_num = #{orderNum,jdbcType=VARCHAR}
+        and a.buy_number > 0
+    </select>
+
+
+    <insert id="insertSelective" parameterType="com.mhc.yunxian.dao.model.OrderGoodsInfo">
+        insert into tbl_order_goods
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="openid != null">
+                openid,
+            </if>
+            <if test="goodsNum != null">
+                goods_num,
+            </if>
+            <if test="orderNum != null">
+                order_num,
+            </if>
+            <if test="goodsName != null">
+                goods_name,
+            </if>
+            <if test="goodsImg != null">
+                goods_img,
+            </if>
+            <if test="limitBuyNum != null">
+                limit_buy_num,
+            </if>
+            <if test="price != null">
+                price,
+            </if>
+            <if test="realPrice != null">
+                real_price,
+            </if>
+            <if test="buyNumber != null">
+                buy_number,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="buyWeight != null">
+                buy_weight,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="openid != null">
+                #{openid,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsNum != null">
+                #{goodsNum,jdbcType=VARCHAR},
+            </if>
+            <if test="orderNum != null">
+                #{orderNum,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsName != null">
+                #{goodsName,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsImg != null">
+                #{goodsImg,jdbcType=VARCHAR},
+            </if>
+            <if test="limitBuyNum != null">
+                #{limitBuyNum,jdbcType=INTEGER},
+            </if>
+            <if test="price != null">
+                #{price,jdbcType=INTEGER},
+            </if>
+            <if test="realPrice != null">
+                #{realPrice,jdbcType=INTEGER},
+            </if>
+            <if test="buyNumber != null">
+                #{buyNumber,jdbcType=INTEGER},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="buyWeight != null">
+                #{buyWeight,jdbcType=FLOAT},
+            </if>
+        </trim>
+    </insert>
+
+
+    <update id="updateByGoodsNum" parameterType="com.mhc.yunxian.dao.model.OrderGoodsInfo">
+        update tbl_order_goods
+        <set>
+            <if test="openid != null">
+                openid = #{openid,jdbcType=VARCHAR},
+            </if>
+            <if test="orderNum != null">
+                order_num = #{orderNum,jdbcType=VARCHAR},
+            </if>
+            <if test="realPrice != null">
+                real_price = #{realPrice,jdbcType=INTEGER},
+            </if>
+            <if test="buyNumber != null">
+                buy_number = #{buyNumber,jdbcType=INTEGER},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="buyWeight != null">
+                buy_weight = #{buyWeight,jdbcType=FLOAT},
+            </if>
+        </set>
+        where goods_num = #{goodsNum,jdbcType=VARCHAR}
+        and order_num = #{orderNum,jdbcType=VARCHAR}
+    </update>
+
+    <update id="updateByOrderNum" parameterType="com.mhc.yunxian.dao.model.OrderGoodsInfo">
+        update tbl_order_goods
+        <set>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="buyWeight != null">
+                buy_weight = #{buyWeight,jdbcType=FLOAT},
+            </if>
+        </set>
+        where order_num = #{orderNum,jdbcType=VARCHAR} and goods_num = #{goodsNum,jdbcType=VARCHAR}
+    </update>
+
+    <update id="updateById" parameterType="com.mhc.yunxian.dao.model.OrderGoodsInfo">
+        update tbl_order_goods
+        <set>
+            <if test="openid != null">
+                openid = #{openid,jdbcType=VARCHAR},
+            </if>
+            <if test="orderNum != null">
+                order_num = #{orderNum,jdbcType=VARCHAR},
+            </if>
+            <if test="realPrice != null">
+                real_price = #{realPrice,jdbcType=INTEGER},
+            </if>
+            <if test="buyNumber != null">
+                buy_number = #{buyNumber,jdbcType=INTEGER},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="buyWeight != null">
+                buy_weight = #{buyWeight,jdbcType=FLOAT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <select id="queryByOrderNums" resultMap="BaseResultMap" parameterType="java.util.List">
+        SELECT
+        *
+        FROM
+        tbl_order_goods
+        where 1=1
+        <if test=" list != null">
+             and order_num in
+            <foreach collection="list" close=")" open="(" separator="," item="item">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <resultMap id="Pay_Order_User_Open_ID" type="java.lang.String">
+        <result column="openid" property="openid" jdbcType="VARCHAR"/>
+    </resultMap>
+    <select id="queryBuyNumGtOneGoodsList" resultMap="Pay_Order_User_Open_ID" parameterType="java.lang.String">
+        SELECT distinct openid
+        from tbl_order_goods
+        where goods_num=#{goodsNum}
+        GROUP BY openid
+    </select>
+
+    <select id="selectOrderGoodsInfoByOpeId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        tbl_order_goods
+        where openid = #{openid}
+    </select>
+
+    <select id="selectOrderGoodsByGoodsNum" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        tbl_order_goods
+        where goods_num = #{goodsNum}
+    </select>
+
+
+</mapper>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mhc.yunxian.dao.AddrToDragonDao">
+  <resultMap id="BaseResultMap" type="com.mhc.yunxian.dao.model.AddrToDragon">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="addr_id" jdbcType="INTEGER" property="addrId" />
+    <result column="dragon_num" jdbcType="VARCHAR" property="dragonNum" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, addr_id, dragon_num
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tbl_addr_to_dragon
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tbl_addr_to_dragon
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByDragonNum" parameterType="java.lang.String">
+    delete from tbl_addr_to_dragon
+    where dragon_num = #{dragonNum,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.mhc.yunxian.dao.model.AddrToDragon">
+    insert into tbl_addr_to_dragon (id, addr_id, dragon_num
+      )
+    values (#{id,jdbcType=INTEGER}, #{addrId,jdbcType=INTEGER}, #{dragonNum,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.mhc.yunxian.dao.model.AddrToDragon">
+    insert into tbl_addr_to_dragon
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="addrId != null">
+        addr_id,
+      </if>
+      <if test="dragonNum != null">
+        dragon_num,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="addrId != null">
+        #{addrId,jdbcType=INTEGER},
+      </if>
+      <if test="dragonNum != null">
+        #{dragonNum,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.mhc.yunxian.dao.model.AddrToDragon">
+    update tbl_addr_to_dragon
+    <set>
+      <if test="addrId != null">
+        addr_id = #{addrId,jdbcType=INTEGER},
+      </if>
+      <if test="dragonNum != null">
+        dragon_num = #{dragonNum,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.mhc.yunxian.dao.model.AddrToDragon">
+    update tbl_addr_to_dragon
+    set addr_id = #{addrId,jdbcType=INTEGER},
+      dragon_num = #{dragonNum,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

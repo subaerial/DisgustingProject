@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mhc.yunxian.dao.DragonGoodsDao" >
+  <resultMap id="BaseResultMap" type="com.mhc.yunxian.dao.model.DragonGoods" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="goods_num" property="goodsNum" jdbcType="VARCHAR" />
+    <result column="dragon_num" property="dragonNum" jdbcType="VARCHAR" />
+    <result column="current_price" property="currentPrice" jdbcType="INTEGER" />
+    <result column="current_number" property="currentNumber" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="limit_buy_num" property="limitBuyNum" jdbcType="INTEGER" />
+    <result column="goods_name" property="goodsName" jdbcType="VARCHAR" />
+    <result column="goods_img" property="goodsImg" jdbcType="VARCHAR" />
+    <result column="specification" property="specification" jdbcType="VARCHAR" />
+    <result column="is_hidden" property="isHidden" jdbcType="TINYINT"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, goods_num, dragon_num, current_price, current_number, update_time, create_time ,
+    limit_buy_num ,goods_name,goods_img,specification, is_hidden
+  </sql>
+
+  <select id="select" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tbl_dragon_goods
+    where dragon_num = #{dragonNum,jdbcType=VARCHAR} and is_hidden = 0
+  </select>
+
+  <select id="getAllByGoodsNum" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from tbl_dragon_goods
+    where goods_num = #{goodsNum,jdbcType=VARCHAR} and is_hidden = 0
+  </select>
+
+  <select id="selectByGoodsNumAndDragonNum" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tbl_dragon_goods
+    where dragon_num = #{arg0}
+    and goods_num = #{arg1} and is_hidden = 0
+  </select>
+
+  <select id="findByGoodsNum" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from tbl_dragon_goods
+    where goods_num = #{goodsNum} and is_hidden = 0
+    order by create_time desc
+    limit 1
+  </select>
+
+
+
+
+  <delete id="delGoodsByGoodsNum" parameterType="java.lang.String" >
+    delete from tbl_dragon_goods
+    where goods_num = #{goodsNum,jdbcType=VARCHAR}
+  </delete>
+
+
+
+  <delete id="delByDragonNum" parameterType="java.lang.String" >
+    delete from tbl_dragon_goods
+    where dragon_num = #{dragonNum,jdbcType=VARCHAR}
+  </delete>
+
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbl_dragon_goods
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from tbl_dragon_goods
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insertSelective" parameterType="com.mhc.yunxian.dao.model.DragonGoods" >
+    insert into tbl_dragon_goods
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="goodsNum != null" >
+        goods_num,
+      </if>
+      <if test="dragonNum != null" >
+        dragon_num,
+      </if>
+      <if test="currentPrice != null" >
+        current_price,
+      </if>
+      <if test="currentNumber != null" >
+        current_number,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="limitBuyNum != null" >
+        limit_buy_num,
+      </if>
+      <if test="goodsName != null" >
+        goods_name,
+      </if>
+      <if test="goodsImg != null" >
+        goods_img,
+      </if>
+      <if test="specification != null" >
+        specification,
+      </if>
+      <if test="isHidden != null">
+        is_hidden,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="goodsNum != null" >
+        #{goodsNum,jdbcType=VARCHAR},
+      </if>
+      <if test="dragonNum != null" >
+        #{dragonNum,jdbcType=VARCHAR},
+      </if>
+      <if test="currentPrice != null" >
+        #{currentPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="currentNumber != null" >
+        #{currentNumber,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="limitBuyNum != null" >
+        #{limitBuyNum,jdbcType=INTEGER},
+      </if>
+      <if test="goodsName != null" >
+        #{goodsName,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsImg != null" >
+        #{goodsImg,jdbcType=VARCHAR},
+      </if>
+      <if test="specification != null" >
+        #{specification,jdbcType=VARCHAR},
+      </if>
+      <if test="isHidden != null">
+        #{isHidden,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.mhc.yunxian.dao.model.DragonGoods" >
+    update tbl_dragon_goods
+    <set >
+      <if test="goodsNum != null" >
+        goods_num = #{goodsNum,jdbcType=VARCHAR},
+      </if>
+      <if test="dragonNum != null" >
+        dragon_num = #{dragonNum,jdbcType=VARCHAR},
+      </if>
+      <if test="currentPrice != null" >
+        current_price = #{currentPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="currentNumber != null" >
+        current_number = #{currentNumber,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="limitBuyNum != null" >
+        limit_buy_num = #{limitBuyNum,jdbcType=INTEGER},
+      </if>
+      <if test="goodsName != null" >
+        goods_name = #{goodsName,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsImg != null" >
+        goods_img = #{goodsImg,jdbcType=VARCHAR},
+      </if>
+      <if test="specification != null" >
+        specification = #{specification,jdbcType=VARCHAR},
+      </if>
+      <if test="isHidden != null">
+        is_hidden = #{isHidden,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

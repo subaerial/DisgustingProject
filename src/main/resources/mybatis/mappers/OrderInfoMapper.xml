@@ -1,0 +1,858 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mhc.yunxian.dao.OrderInfoDao">
+    <resultMap id="BaseResultMap" type="com.mhc.yunxian.dao.model.OrderInfo">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="openid" property="openid" jdbcType="VARCHAR"/>
+        <result column="order_num" property="orderNum" jdbcType="VARCHAR"/>
+        <result column="dragon_num" property="dragonNum" jdbcType="VARCHAR"/>
+        <result column="transaction_id" property="transactionId" jdbcType="VARCHAR"/>
+        <result column="order_status" property="orderStatus" jdbcType="INTEGER"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="order_remark" property="orderRemark" jdbcType="VARCHAR"/>
+        <result column="order_money" property="orderMoney" jdbcType="INTEGER"/>
+        <result column="addr_phone" property="addrPhone" jdbcType="VARCHAR"/>
+        <result column="addr_name" property="addrName" jdbcType="VARCHAR"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="send_time" property="sendTime" jdbcType="TIMESTAMP"/>
+        <result column="comfirm_time" property="comfirmTime" jdbcType="TIMESTAMP"/>
+        <result column="is_cod" property="isCod" jdbcType="INTEGER"/>
+        <result column="parent_order_num" property="parentOrderNum" jdbcType="VARCHAR"/>
+        <result column="is_pay_later" property="isPayLater" jdbcType="INTEGER"/>
+        <result column="send_notice_num" property="sendNoticeNum" jdbcType="INTEGER"/>
+        <result column="dragon_addr" property="dragonAddr" jdbcType="VARCHAR"/>
+        <result column="coupon_user_id" property="couponUserId" jdbcType="INTEGER"/>
+        <result column="coupon_amount" property="couponAmount" jdbcType="INTEGER"/>
+        <result column="seller_desc" property="sellerDesc" jdbcType="VARCHAR"/>
+        <result column="is_delivery" property="isDelivery" jdbcType="INTEGER"/>
+        <result column="order_type" property="orderType" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <resultMap id="OrderStatisticsListDetailMap" type="com.mhc.yunxian.bean.OrderStatisticsListDetail">
+        <result column="order_num" property="orderNum" jdbcType="VARCHAR"/>
+        <result column="order_status" property="orderStatus" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="order_money" property="realMoney" jdbcType="INTEGER"/>
+        <result column="nick_name" property="nickName" jdbcType="VARCHAR"/>
+        <result column="head_img_url" property="headImg" jdbcType="VARCHAR"/>
+    </resultMap>
+
+
+    <resultMap id="myUserOrderMap" type="com.mhc.yunxian.bean.GetMyUserOrder">
+        <result column="order_num" property="orderNum" jdbcType="VARCHAR"/>
+        <result column="order_status" property="orderStatus" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="order_money" property="orderMoney" jdbcType="INTEGER"/>
+        <result column="nick_name" property="nickName" jdbcType="VARCHAR"/>
+        <result column="head_img_url" property="headImg" jdbcType="VARCHAR"/>
+        <result column="parent_order_num" property="parentOrderNum" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="dragonHistoryMap" type="com.mhc.yunxian.bean.DragonHistory">
+        <result column="openid" property="openid" jdbcType="VARCHAR"/>
+        <result column="dragon_num" property="dragonNum" jdbcType="VARCHAR"/>
+        <result column="order_num" property="orderNum" jdbcType="VARCHAR"/>
+        <result column="dragon_addr" property="dragonAddr" jdbcType="VARCHAR"/>
+        <result column="nick_name" property="nickName" jdbcType="VARCHAR"/>
+        <result column="head_img_url" property="headImg" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, openid, order_num, dragon_num, transaction_id ,order_status, update_time, create_time, order_remark,
+        order_money, address, addr_phone, addr_name, send_time, comfirm_time,
+        parent_order_num,is_cod , is_pay_later , send_notice_num,
+        dragon_addr,coupon_user_id,coupon_amount,seller_desc,is_delivery,order_type
+    </sql>
+
+    <select id="selectOrderDetailByDragonNum" resultMap="dragonHistoryMap" parameterType="java.lang.String">
+        SELECT
+        a.*,b.nick_name,b.head_img_url
+        FROM
+        tbl_order_info a
+        LEFT JOIN tbl_wx_user b ON a.openid = b.openid
+        WHERE
+        a.dragon_num = #{dragonNum,jdbcType=VARCHAR}
+    </select>
+
+
+    <select id="selectMyUserOrder" resultMap="myUserOrderMap" parameterType="java.util.Map">
+        SELECT
+        a.*,b.nick_name,b.head_img_url
+        FROM
+        tbl_order_info a
+        LEFT JOIN tbl_wx_user b ON a.openid = b.openid
+        WHERE
+        a.dragon_num IN (
+        SELECT
+        c.dragon_num
+        FROM
+        tbl_dragon_info c
+        WHERE
+        c.openid = #{sellerOpenid,jdbcType=VARCHAR}
+        )
+        AND a.openid = #{buyerOpenid,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectOrderStatisticsListDetail" resultMap="OrderStatisticsListDetailMap"
+            parameterType="com.mhc.yunxian.bean.OrderStatisticsListRequest">
+        SELECT
+        a.order_num,
+        a.order_money,
+        a.order_status,
+        a.create_time,
+        b.nick_name,
+        b.head_img_url
+        FROM
+        tbl_order_info a
+        LEFT JOIN tbl_wx_user b ON a.openid = b.openid
+        LEFT JOIN tbl_dragon_info c ON a.dragon_num = c.dragon_num
+        <where>
+            <if test="openid != null">
+                c.openid = #{openid,jdbcType=VARCHAR}
+            </if>
+            <if test="orderNum != null">
+                and a.order_num LIKE CONCAT('%',#{orderNum},'%')
+            </if>
+            <if test="orderStatus != null">
+                and a.order_status = #{orderStatus,jdbcType=INTEGER}
+            </if>
+            <if test="nickName != null">
+                and b.nick_name LIKE CONCAT('%',#{nickName},'%')
+            </if>
+            <if test="startDate != null">
+                and a.create_time >= #{startDate,jdbcType=VARCHAR}
+            </if>
+            <if test="endDate != null">
+                and #{endDate,jdbcType=VARCHAR} >= a.create_time
+            </if>
+        </where>
+
+    </select>
+
+
+    <select id="selectOrderBySellerId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_order_info
+        where dragon_num in (select b.dragon_num from tbl_dragon_info b where b.openid = #{openid,jdbcType=VARCHAR} )
+        order by id DESC
+    </select>
+
+    <select id="selectOrderBySellerIdIndex" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_order_info
+        where dragon_num = #{dragonNum,jdbcType=VARCHAR}
+        and order_status in (1,2,3,4)
+        order by id DESC
+    </select>
+
+
+    <select id="selectAllOrder" resultType="java.lang.Integer">
+        select count(*) from tbl_order_info
+    </select>
+
+    <select id="selectAllOrderIndex" resultType="java.lang.Integer">
+        select count(*) from tbl_order_info
+        where order_status = 3
+    </select>
+
+    <select id="selectAdminOrder" resultMap="BaseResultMap"
+            parameterType="com.mhc.yunxian.bean.admin.OrderDetailsRequest">
+        SELECT
+        a.*,
+        b.nick_name AS buyerName,
+        d.nick_name as sellerName,
+        c.phone as sellerPhone
+        FROM
+        tbl_order_info a
+        LEFT JOIN tbl_wx_user b ON a.openid = b.openid
+        LEFT JOIN tbl_dragon_info c ON a.dragon_num = c.dragon_num
+        LEFT JOIN tbl_wx_user d ON c.openid = d.openid
+
+
+        <where>
+            <if test="buyerName != null">
+                b.nick_name LIKE CONCAT('%',#{buyerName},'%')
+            </if>
+            <if test="buyerPhone != null">
+                and a.addr_phone LIKE CONCAT('%',#{buyerPhone},'%')
+            </if>
+            <if test="sellerName != null">
+                and d.nick_name LIKE CONCAT('%',#{sellerName},'%')
+            </if>
+            <if test="sellerPhone != null">
+                and c.phone LIKE CONCAT('%',#{sellerPhone},'%')
+            </if>
+            <if test="status != null">
+                and a.order_status = #{status,jdbcType=INTEGER}
+            </if>
+            <if test="startDate != null">
+                and a.create_time >= #{startDate,jdbcType=VARCHAR}
+            </if>
+            <if test="endDate != null">
+                and #{endDate,jdbcType=VARCHAR} > a.create_time
+            </if>
+        </where>
+
+        order by a.id DESC
+    </select>
+
+
+    <select id="selectOrderAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_order_info
+        order by id DESC
+    </select>
+
+    <select id="selectOrderByOrderStatus" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_order_info
+        where order_status = #{orderStatus,jdbcType=VARCHAR}
+        order by id DESC
+    </select>
+
+
+    <select id="selectOrder" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_order_info
+        where dragon_num = #{dragonNum,jdbcType=VARCHAR}
+        order by id DESC
+    </select>
+
+    <select id="selectOrderByDragonNumAndStatus" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_order_info
+        where dragon_num = #{arg0}
+        and order_status = #{arg1}
+        order by id DESC
+    </select>
+
+    <select id="queryDragonOrdersByOrderStatus" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_order_info
+        where 1=1
+        <if test="arg0 != null">
+            and dragon_num = #{arg0}
+        </if>
+        <if test="arg1 != null">
+            and order_status = #{arg1}
+        </if>
+        order by id DESC
+    </select>
+
+    <select id="queryByDragonNums" resultMap="BaseResultMap" parameterType="java.util.List">
+        select * from tbl_order_info
+        <where>
+            <if test="list != null and list.size()!= 0">
+                dragon_num in
+                <foreach collection="list" item="item" open="(" close=")" separator=",">
+                    #{item,jdbcType=VARCHAR}
+                </foreach>
+            </if>
+        </where>
+    </select>
+    <select id="selectCompeletedOrderByDragonNum" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_order_info
+        where dragon_num=#{dragonNum,jdbcType=VARCHAR}
+        and order_status in (3,5)
+        order by id DESC
+    </select>
+
+    <select id="selectOrderByOpenidAndDragonNum" resultMap="BaseResultMap" parameterType="java.util.Map">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_order_info
+        <where>
+            <if test="openid != null">
+                and openid=#{openid,jdbcType=VARCHAR}
+            </if>
+            <if test="dragonNum != null">
+                and dragon_num=#{dragonNum,jdbcType=VARCHAR}
+            </if>
+        </where>
+        order by id DESC
+    </select>
+
+    <select id="selectOrderByOrderNum" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_order_info
+        where order_num = #{orderNum,jdbcType=VARCHAR}
+    </select>
+
+
+    <select id="selectOrderByParentOrderNum" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_order_info
+        where parent_order_num = #{parentOrderNum,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectOrderByOpenid" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_order_info
+        where openid = #{openid,jdbcType=VARCHAR}
+        order by id DESC
+    </select>
+
+    <select id="selectOrderByOpenidAndStatus" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_order_info
+        where openid = #{arg0}
+        and order_status = #{arg1}
+        order by id DESC
+    </select>
+
+
+    <select id="countCompleteNumByOpenid" resultType="java.lang.Integer" parameterType="java.lang.String">
+        select
+        count(*)
+        from tbl_order_info
+        where openid = #{openid,jdbcType=VARCHAR}
+        and order_status = 3
+    </select>
+
+
+    <select id="selectOrderStatistics" resultMap="BaseResultMap"
+            parameterType="com.mhc.yunxian.bean.OperationStatisticsRequest">
+        select a.* from tbl_order_info a
+        LEFT JOIN tbl_wx_user b
+        on a.openid = b.openid
+        LEFT JOIN (
+        select c.*,d.nick_name from tbl_dragon_info c
+        LEFT JOIN tbl_wx_user d
+        on c.openid = d.openid
+        ) e
+        on a.dragon_num = e.dragon_num
+
+        <where>
+            <if test="year != null">
+                year(a.create_time) = #{year,jdbcType=VARCHAR}
+            </if>
+            <if test="month != null">
+                and MONTH(a.create_time) = #{month,jdbcType=VARCHAR}
+            </if>
+            <if test="day != null">
+                and DAY(a.create_time) = #{day,jdbcType=VARCHAR}
+            </if>
+            <if test="sellerName != null">
+                and e.nick_name LIKE CONCAT('%',#{sellerName},'%')
+            </if>
+            <if test="buyerName != null">
+                and b.nick_name LIKE CONCAT('%',#{buyerName},'%')
+            </if>
+            and a.order_status in(1,2,3,4)
+        </where>
+    </select>
+
+    <select id="getOrdersByCondition" resultMap="BaseResultMap"
+            parameterType="com.mhc.yunxian.bean.OperationStatisticsRequest">
+        select a.* from tbl_order_info a
+        LEFT JOIN tbl_wx_user b
+        on a.openid = b.openid
+        LEFT JOIN (
+        select c.*,d.nick_name from tbl_dragon_info c
+        LEFT JOIN tbl_wx_user d
+        on c.openid = d.openid
+        ) e
+        on a.dragon_num = e.dragon_num
+        <where>
+            <trim prefix="AND" prefixOverrides="AND">
+            <if test="sellerName != null">
+                and e.nick_name LIKE CONCAT('%',#{sellerName},'%')
+            </if>
+            <if test="buyerName != null">
+                and b.nick_name LIKE CONCAT('%',#{buyerName},'%')
+            </if>
+            <if test="beginDate != null">
+                and a.create_time >= #{beginDate,jdbcType=VARCHAR}
+            </if>
+            <if test="endDate != null">
+                and #{endDate,jdbcType=VARCHAR} >= a.create_time
+            </if>
+            </trim>
+            and a.order_status in(1,2,3,4)
+        </where>
+    </select>
+
+
+    <select id="countOrderNumber" resultType="java.lang.Integer" parameterType="java.util.Map">
+        SELECT
+        count( * )
+        FROM
+        tbl_order_info a
+        LEFT JOIN tbl_dragon_info b ON a.dragon_num = b.dragon_num
+        <where>
+            <if test="year != null">
+                year(a.update_time) = #{year,jdbcType=VARCHAR}
+            </if>
+            <if test="month != null">
+                and MONTH(a.update_time) = #{month,jdbcType=VARCHAR}
+            </if>
+            <if test="day != null">
+                and DAY(a.update_time) = #{day,jdbcType=VARCHAR}
+            </if>
+            <if test="week != null">
+                and year(a.update_time) = year(#{week,jdbcType=VARCHAR})
+                and YEARWEEK(a.update_time,1) = YEARWEEK(#{week,jdbcType=VARCHAR},1)
+            </if>
+            <if test="openid != null">
+                and b.openid = #{openid,jdbcType=VARCHAR}
+            </if>
+            and a.order_status in(1,2,3,4)
+        </where>
+    </select>
+
+    <select id="countOrderMoney" resultType="java.lang.Integer" parameterType="java.util.Map">
+        SELECT
+        IFNULL(sum( a.order_money ),0)
+        FROM
+        tbl_order_info a
+        LEFT JOIN tbl_dragon_info b ON a.dragon_num = b.dragon_num
+        <where>
+            <if test="year != null">
+                year(a.update_time) = #{year,jdbcType=VARCHAR}
+            </if>
+            <if test="month != null">
+                and MONTH(a.update_time) = #{month,jdbcType=VARCHAR}
+            </if>
+            <if test="day != null">
+                and DAY(a.update_time) = #{day,jdbcType=VARCHAR}
+            </if>
+            <if test="week != null">
+                and year(a.update_time) = year(#{week,jdbcType=VARCHAR})
+                and YEARWEEK(a.update_time,1) = YEARWEEK(#{week,jdbcType=VARCHAR},1)
+            </if>
+            <if test="openid != null">
+                and b.openid = #{openid,jdbcType=VARCHAR}
+            </if>
+            and a.order_status in(1,2,3,4)
+        </where>
+    </select>
+
+
+    <!--<select id="selectSellerOrderStatistics" resultMap="BaseResultMap" parameterType="com.mhc.yunxian.bean.OperationStatisticsRequest" >-->
+    <!--select a.* from tbl_order_info a-->
+    <!--LEFT JOIN tbl_wx_user b-->
+    <!--on a.openid = b.openid-->
+    <!--LEFT JOIN (-->
+    <!--select c.*,d.nick_name from tbl_dragon_info c-->
+    <!--LEFT JOIN tbl_wx_user d-->
+    <!--on c.openid = d.openid-->
+    <!--) e-->
+    <!--on a.dragon_num = e.dragon_num-->
+
+    <!--<where>-->
+    <!--<if test="year != null">-->
+    <!--year(a.update_time) = #{year,jdbcType=VARCHAR}-->
+    <!--</if>-->
+    <!--<if test="month != null">-->
+    <!--and MONTH(a.update_time) = #{month,jdbcType=VARCHAR}-->
+    <!--</if>-->
+    <!--<if test="day != null">-->
+    <!--and DAY(a.update_time) = #{day,jdbcType=VARCHAR}-->
+    <!--</if>-->
+    <!--<if test="week != null">-->
+    <!--and YEARWEEK(a.update_time,1) = YEARWEEK(#{week,jdbcType=VARCHAR},1)-->
+    <!--</if>-->
+    <!--<if test="sellerName != null">-->
+    <!--and e.nick_name LIKE CONCAT('%',#{sellerName},'%')-->
+    <!--</if>-->
+    <!--<if test="buyerName != null">-->
+    <!--and b.nick_name LIKE CONCAT('%',#{buyerName},'%')-->
+    <!--</if>-->
+    <!--<if test="openid != null">-->
+    <!--and e.openid = #{openid,jdbcType=VARCHAR}-->
+    <!--</if>-->
+    <!--and a.order_status in(1,2,3,4)-->
+    <!--</where>-->
+    <!--</select>-->
+
+
+    <insert id="insertSelective" parameterType="com.mhc.yunxian.dao.model.OrderInfo">
+        insert into tbl_order_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="openid != null">
+                openid,
+            </if>
+            <if test="orderNum != null">
+                order_num,
+            </if>
+            <if test="dragonNum != null">
+                dragon_num,
+            </if>
+            <if test="transactionId != null">
+                transaction_id,
+            </if>
+            <if test="orderStatus != null">
+                order_status,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="orderRemark != null">
+                order_remark,
+            </if>
+            <if test="orderMoney != null">
+                order_money,
+            </if>
+            <if test="address != null">
+                address,
+            </if>
+            <if test="addrPhone != null">
+                addr_phone,
+            </if>
+            <if test="addrName != null">
+                addr_name,
+            </if>
+            <if test="sendTime != null">
+                send_time,
+            </if>
+            <if test="comfirmTime != null">
+                comfirm_time,
+            </if>
+            <if test="isCod != null">
+                is_cod,
+            </if>
+            <if test="parentOrderNum != null">
+                parent_order_num,
+            </if>
+            <if test="isPayLater != null">
+                is_pay_later,
+            </if>
+            <if test="dragonAddr != null">
+                dragon_addr,
+            </if>
+            <if test="couponUserId != null">
+                coupon_user_id,
+            </if>
+            <if test="couponAmount != null">
+                coupon_amount,
+            </if>
+            <if test="sellerDesc != null">
+                seller_desc,
+            </if>
+            <if test="isDelivery != null">
+                is_delivery,
+            </if>
+            <if test="orderType != null">
+                order_type,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="openid != null">
+                #{openid,jdbcType=VARCHAR},
+            </if>
+            <if test="orderNum != null">
+                #{orderNum,jdbcType=VARCHAR},
+            </if>
+            <if test="transactionId != null">
+                #{transactionId,jdbcType=VARCHAR},
+            </if>
+
+            <if test="dragonNum != null">
+                #{dragonNum,jdbcType=VARCHAR},
+            </if>
+            <if test="orderStatus != null">
+                #{orderStatus,jdbcType=INTEGER},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="orderRemark != null">
+                #{orderRemark,jdbcType=VARCHAR},
+            </if>
+            <if test="orderMoney != null">
+                #{orderMoney,jdbcType=INTEGER},
+            </if>
+            <if test="address != null">
+                #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="addrPhone != null">
+                #{addrPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="addrName != null">
+                #{addrName,jdbcType=VARCHAR},
+            </if>
+            <if test="sendTime != null">
+                #{sendTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="comfirmTime != null">
+                #{comfirmTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isCod != null">
+                #{isCod,jdbcType=INTEGER},
+            </if>
+            <if test="parentOrderNum != null">
+                #{parentOrderNum,jdbcType=VARCHAR},
+            </if>
+            <if test="isPayLater != null">
+                #{isPayLater,jdbcType=INTEGER},
+            </if>
+            <if test="dragonAddr != null">
+                #{dragonAddr,jdbcType=VARCHAR},
+            </if>
+            <if test="couponUserId != null">
+                #{couponUserId,jdbcType=INTEGER},
+            </if>
+            <if test="couponAmount != null">
+                #{couponAmount,jdbcType=INTEGER},
+            </if>
+            <if test="sellerDesc != null">
+                #{sellerDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="isDelivery != null">
+                #{isDelivery,jdbcType=INTEGER},
+            </if>
+            <if test="orderType != null">
+                #{orderType,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+
+
+    <update id="updateOrderById" parameterType="com.mhc.yunxian.dao.model.OrderInfo">
+        update tbl_order_info
+        <set>
+            <if test="openid != null">
+                openid = #{openid,jdbcType=VARCHAR},
+            </if>
+            <if test="orderNum != null">
+                order_num = #{orderNum,jdbcType=VARCHAR},
+            </if>
+            <if test="transactionId != null">
+                transaction_id = #{transactionId,jdbcType=VARCHAR},
+            </if>
+
+            <if test="dragonNum != null">
+                dragon_num = #{dragonNum,jdbcType=VARCHAR},
+            </if>
+            <if test="orderStatus != null">
+                order_status = #{orderStatus,jdbcType=INTEGER},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="orderRemark != null">
+                order_remark = #{orderRemark,jdbcType=VARCHAR},
+            </if>
+            <if test="orderMoney != null">
+                order_money = #{orderMoney,jdbcType=INTEGER},
+            </if>
+            <if test="address != null">
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="addrPhone != null">
+                addr_phone = #{addrPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="addrName != null">
+                addr_name = #{addrName,jdbcType=VARCHAR},
+            </if>
+            <if test="sendTime != null">
+                send_time = #{sendTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="comfirmTime != null">
+                comfirm_time = #{comfirmTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isCod != null">
+                is_cod = #{isCod,jdbcType=INTEGER},
+            </if>
+            <if test="parentOrderNum != null">
+                parent_order_num = #{parentOrderNum,jdbcType=VARCHAR},
+            </if>
+            <if test="sendNoticeNum != null">
+                send_notice_num = #{sendNoticeNum,jdbcType=VARCHAR},
+            </if>
+            <if test="couponUserId != null">
+                coupon_user_id = #{couponUserId,jdbcType=INTEGER},
+            </if>
+            <if test="couponAmount != null">
+                coupon_amount = #{couponAmount,jdbcType=INTEGER},
+            </if>
+            <if test="sellerDesc != null">
+                seller_desc = #{sellerDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="isDelivery != null">
+                is_delivery = #{isDelivery,jdbcType=INTEGER},
+            </if>
+            <if test="orderType != null">
+                order_type = #{orderType,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+
+    <update id="updateOrder" parameterType="com.mhc.yunxian.dao.model.OrderInfo">
+        update tbl_order_info
+        <set>
+            <if test="openid != null">
+                openid = #{openid,jdbcType=VARCHAR},
+            </if>
+            <if test="orderNum != null">
+                order_num = #{orderNum,jdbcType=VARCHAR},
+            </if>
+            <if test="transactionId != null">
+                transaction_id = #{transactionId,jdbcType=VARCHAR},
+            </if>
+
+            <if test="dragonNum != null">
+                dragon_num = #{dragonNum,jdbcType=VARCHAR},
+            </if>
+            <if test="orderStatus != null">
+                order_status = #{orderStatus,jdbcType=INTEGER},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="orderRemark != null">
+                order_remark = #{orderRemark,jdbcType=VARCHAR},
+            </if>
+            <if test="orderMoney != null">
+                order_money = #{orderMoney,jdbcType=INTEGER},
+            </if>
+            <if test="address != null">
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="addrPhone != null">
+                addr_phone = #{addrPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="addrName != null">
+                addr_name = #{addrName,jdbcType=VARCHAR},
+            </if>
+            <if test="sendTime != null">
+                send_time = #{sendTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="comfirmTime != null">
+                comfirm_time = #{comfirmTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isCod != null">
+                is_cod = #{isCod,jdbcType=INTEGER},
+            </if>
+            <if test="parentOrderNum != null">
+                parent_order_num = #{parentOrderNum,jdbcType=VARCHAR},
+            </if>
+            <if test="sendNoticeNum != null">
+                send_notice_num = #{sendNoticeNum,jdbcType=VARCHAR},
+            </if>
+            <if test="couponUserId != null">
+                coupon_user_id = #{couponUserId,jdbcType=INTEGER},
+            </if>
+            <if test="couponAmount != null">
+                coupon_amount = #{couponAmount,jdbcType=INTEGER},
+            </if>
+            <if test="sellerDesc != null">
+                seller_desc = #{sellerDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="isDelivery != null">
+                is_delivery = #{isDelivery,jdbcType=INTEGER},
+            </if>
+            <if test="orderType != null">
+                order_type = #{orderType,jdbcType=INTEGER},
+            </if>
+        </set>
+        where order_num = #{orderNum,jdbcType=VARCHAR}
+    </update>
+
+    <!--根据openId和订单状态查询订单-->
+    <select id="getOrdersByOrderStatus" resultMap="BaseResultMap" parameterType="com.mhc.yunxian.dao.model.OrderInfo">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_order_info
+        where openid = #{openid,jdbcType=VARCHAR}
+        AND order_status = #{orderStatus,jdbcType=INTEGER}
+    </select>
+    <!--根据订单编号修改订单状态-->
+    <update id="modifyOrderStatusByOrderNum" parameterType="com.mhc.yunxian.dao.model.OrderInfo">
+        update tbl_order_info
+        set order_status = #{orderStatus,jdbcType=INTEGER}
+
+        where order_num = #{orderNum,jdbcType=VARCHAR}
+    </update>
+
+    <!--根据openId和订单状态查询订单数量-->
+    <select id="getOrderCountByOpenIdAndOrderStatus" resultType="java.lang.Integer"
+            parameterType="com.mhc.yunxian.dao.model.OrderInfo">
+        select COUNT(*)
+        from tbl_order_info
+        where openid = #{openid,jdbcType=VARCHAR}
+        AND order_status = #{orderStatus,jdbcType=INTEGER}
+    </select>
+
+    <resultMap id="DragonBaseResultMap" type="com.mhc.yunxian.dao.model.DragonInfo">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="dragon_num" property="dragonNum" jdbcType="VARCHAR"/>
+        <result column="dragon_title" property="dragonTitle" jdbcType="VARCHAR"/>
+        <result column="dragon_desc" property="dragonDesc" jdbcType="VARCHAR"/>
+        <result column="dragon_img" property="dragonImg" jdbcType="VARCHAR"/>
+        <result column="end_time" property="endTime" jdbcType="VARCHAR"/>
+        <result column="send_time" property="sendTime" jdbcType="VARCHAR"/>
+        <result column="cash_on_delivery" property="cashOnDelivery" jdbcType="INTEGER"/>
+        <result column="addr" property="addr" jdbcType="VARCHAR"/>
+        <result column="openid" property="openid" jdbcType="VARCHAR"/>
+        <result column="dragon_status" property="dragonStatus" jdbcType="INTEGER"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="is_pay_later" property="isPayLater" jdbcType="INTEGER"/>
+        <result column="sub_dragon_num" property="subDragonNum" jdbcType="VARCHAR"/>
+        <result column="is_delivery" property="isDelivery" jdbcType="INTEGER"/>
+        <result column="global_limit" property="globalLimit" jdbcType="INTEGER"/>
+        <result column="is_coupon" property="isCoupon" jdbcType="TINYINT"/>
+        <result column="dragon_video" property="dragonVideo" jdbcType="VARCHAR"/>
+        <result column="cut_off_time" property="cutOffTime" jdbcType="VARCHAR"/>
+        <result column="delivery_cycle" property="deliveryCycle" jdbcType="VARCHAR"/>
+    </resultMap>
+    <select id="getDragonInfoByCouponUserId" parameterType="java.lang.Integer" resultMap="DragonBaseResultMap">
+        select * from tbl_dragon_info where dragon_num=
+        (select distinct
+        a.dragon_num
+        from tbl_order_info a
+        left join tbl_coupon_user b
+        on a.coupon_user_id = b.id
+        where a.coupon_user_id=#{couponUserId})
+    </select>
+
+    <select id="countBy" resultType="com.mhc.yunxian.vo.CountVO">
+        select
+        count(*) as total,
+        order_status as state
+        from tbl_order_info
+        group by order_status
+    </select>
+    <select id="countBizOrderByDragonNum" resultType="java.lang.Long" parameterType="java.lang.String">
+        select
+        count(1)
+        from tbl_order_info
+        where order_status=3 and dragon_num=#{dragonNum} and parent_order_num is null
+    </select>
+</mapper>

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mhc.yunxian.dao.SystemParamDao" >
+  <resultMap id="BaseResultMap" type="com.mhc.yunxian.dao.model.SystemParam" >
+    <id column="sys_param_id" property="sysParamId" jdbcType="BIGINT" />
+    <result column="param_group" property="paramGroup" jdbcType="VARCHAR" />
+    <result column="param_key" property="paramKey" jdbcType="VARCHAR" />
+    <result column="param_value" property="paramValue" jdbcType="VARCHAR" />
+    <result column="param_desc" property="paramDesc" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" />
+    <result column="gmt_modified" property="gmtModified" jdbcType="TIMESTAMP" />
+    <result column="button_img" property="buttonImg" jdbcType="VARCHAR" />
+    <result column="button_img_highlighting" property="buttonImgHighlighting" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    sys_param_id, param_group, param_key, param_value, param_desc, `status`, gmt_create, 
+    gmt_modified, button_img, button_img_highlighting
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbl_system_param
+    where sys_param_id = #{sysParamId,jdbcType=BIGINT}
+  </select>
+
+
+
+  <select id="selectByParamGroup" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tbl_system_param
+    where param_group = #{paramGroup,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectOneByParamGroup" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tbl_system_param
+    where param_group = #{paramGroup,jdbcType=VARCHAR}
+  </select>
+
+  <insert id="insertSelective" parameterType="com.mhc.yunxian.dao.model.SystemParam" >
+    insert into tbl_system_param
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="sysParamId != null" >
+        sys_param_id,
+      </if>
+      <if test="paramGroup != null" >
+        param_group,
+      </if>
+      <if test="paramKey != null" >
+        param_key,
+      </if>
+      <if test="paramValue != null" >
+        param_value,
+      </if>
+      <if test="paramDesc != null" >
+        param_desc,
+      </if>
+      <if test="status != null" >
+        `status`,
+      </if>
+      <if test="gmtCreate != null" >
+        gmt_create,
+      </if>
+      <if test="gmtModified != null" >
+        gmt_modified,
+      </if>
+      <if test="buttonImg != null" >
+        button_img,
+      </if>
+      <if test="buttonImgHighlighting != null" >
+        button_img_highlighting,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="sysParamId != null" >
+        #{sysParamId,jdbcType=BIGINT},
+      </if>
+      <if test="paramGroup != null" >
+        #{paramGroup,jdbcType=VARCHAR},
+      </if>
+      <if test="paramKey != null" >
+        #{paramKey,jdbcType=VARCHAR},
+      </if>
+      <if test="paramValue != null" >
+        #{paramValue,jdbcType=VARCHAR},
+      </if>
+      <if test="paramDesc != null" >
+        #{paramDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="gmtCreate != null" >
+        #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModified != null" >
+        #{gmtModified,jdbcType=TIMESTAMP},
+      </if>
+      <if test="buttonImg != null" >
+        #{buttonImg,jdbcType=VARCHAR},
+      </if>
+      <if test="buttonImgHighlighting != null" >
+        #{buttonImgHighlighting,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.mhc.yunxian.dao.model.SystemParam" >
+    update tbl_system_param
+    <set >
+      <if test="paramGroup != null" >
+        param_group = #{paramGroup,jdbcType=VARCHAR},
+      </if>
+      <if test="paramKey != null" >
+        param_key = #{paramKey,jdbcType=VARCHAR},
+      </if>
+      <if test="paramValue != null" >
+        param_value = #{paramValue,jdbcType=VARCHAR},
+      </if>
+      <if test="paramDesc != null" >
+        param_desc = #{paramDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        `status` = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="gmtCreate != null" >
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModified != null" >
+        gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
+      </if>
+      <if test="buttonImg != null" >
+        button_img = #{buttonImg,jdbcType=VARCHAR},
+      </if>
+      <if test="buttonImgHighlighting != null" >
+        button_img_highlighting = #{buttonImgHighlighting,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where sys_param_id = #{sysParamId,jdbcType=BIGINT}
+  </update>
+
+</mapper>

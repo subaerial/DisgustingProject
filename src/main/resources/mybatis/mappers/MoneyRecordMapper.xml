@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mhc.yunxian.dao.MoneyRecordDao" >
+  <resultMap id="BaseResultMap" type="com.mhc.yunxian.dao.model.MoneyRecord" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="drawMoneyId" property="drawMoneyId" jdbcType="VARCHAR" />
+    <result column="balance" property="balance" jdbcType="VARCHAR" />
+    <result column="openid" property="openid" jdbcType="VARCHAR" />
+    <result column="money" property="money" jdbcType="INTEGER" />
+    <result column="record_type" property="recordType" jdbcType="INTEGER" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="cause" property="cause" jdbcType="VARCHAR" />
+    <result column="order_num" property="orderNum" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, openid, money, record_type, update_time, create_time,drawMoneyId,balance,cause,order_num
+  </sql>
+  <select id="selectByOpenid" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbl_money_record
+    where openid = #{openid,jdbcType=VARCHAR} order by create_time desc
+  </select>
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from tbl_money_record
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectRecordByDrawMoneyId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tbl_money_record
+    where drawMoneyId = #{drawMoneyId,jdbcType=VARCHAR} order by create_time desc
+  </select>
+  <select id="selectRecordByOrderNum" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tbl_money_record
+    where order_num = #{orderNum,jdbcType=VARCHAR} order by create_time desc
+  </select>
+  <select id="selectRefundedRecordByOrderNum" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tbl_money_record
+    where order_num = #{orderNum,jdbcType=VARCHAR} and record_type = 6
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from tbl_money_record
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <!--<insert id="insert" parameterType="com.mhc.yunxian.dao.model.MoneyRecord" >-->
+    <!--insert into tbl_money_record (id, openid, money, -->
+      <!--record_type, update_time, create_time-->
+      <!--)-->
+    <!--values (#{id,jdbcType=INTEGER}, #{openid,jdbcType=VARCHAR}, #{money,jdbcType=INTEGER},-->
+      <!--#{recordType,jdbcType=INTEGER}, #{updateTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}-->
+      <!--)-->
+  <!--</insert>-->
+  <insert id="insertSelective" parameterType="com.mhc.yunxian.dao.model.MoneyRecord" >
+    insert into tbl_money_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="balance != null" >
+        balance,
+      </if>
+      <if test="drawMoneyId != null" >
+        drawMoneyId,
+      </if>
+      <if test="openid != null" >
+        openid,
+      </if>
+      <if test="money != null" >
+        money,
+      </if>
+      <if test="recordType != null" >
+        record_type,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="cause != null" >
+        cause,
+      </if>
+      <if test="orderNum != null" >
+        order_num,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="balance != null" >
+        #{balance,jdbcType=VARCHAR},
+      </if>
+      <if test="drawMoneyId != null" >
+        #{drawMoneyId,jdbcType=VARCHAR},
+      </if>
+      <if test="openid != null" >
+        #{openid,jdbcType=VARCHAR},
+      </if>
+      <if test="money != null" >
+        #{money,jdbcType=INTEGER},
+      </if>
+      <if test="recordType != null" >
+        #{recordType,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="cause != null" >
+        #{cause,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNum != null" >
+        #{orderNum,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <!--<update id="updateByPrimaryKeySelective" parameterType="com.mhc.yunxian.dao.model.MoneyRecord" >-->
+    <!--update tbl_money_record-->
+    <!--<set >-->
+      <!--<if test="openid != null" >-->
+        <!--openid = #{openid,jdbcType=VARCHAR},-->
+      <!--</if>-->
+      <!--<if test="money != null" >-->
+        <!--money = #{money,jdbcType=INTEGER},-->
+      <!--</if>-->
+      <!--<if test="recordType != null" >-->
+        <!--record_type = #{recordType,jdbcType=INTEGER},-->
+      <!--</if>-->
+      <!--<if test="updateTime != null" >-->
+        <!--update_time = #{updateTime,jdbcType=TIMESTAMP},-->
+      <!--</if>-->
+      <!--<if test="createTime != null" >-->
+        <!--create_time = #{createTime,jdbcType=TIMESTAMP},-->
+      <!--</if>-->
+    <!--</set>-->
+    <!--where id = #{id,jdbcType=INTEGER}-->
+  <!--</update>-->
+  <update id="updateByDrawMoneyId" parameterType="com.mhc.yunxian.dao.model.MoneyRecord" >
+    update tbl_money_record
+    <set >
+      <if test="openid != null" >
+        openid = #{openid,jdbcType=VARCHAR},
+      </if>
+      <if test="money != null" >
+        money = #{money,jdbcType=INTEGER},
+      </if>
+      <if test="balance != null" >
+        balance = #{balance,jdbcType=VARCHAR},
+      </if>
+      <if test="recordType != null" >
+        record_type = #{recordType,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="cause != null" >
+        cause = #{cause,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNum != null" >
+        order_num = #{orderNum,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where drawMoneyId = #{drawMoneyId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByOrderNum" parameterType="com.mhc.yunxian.dao.model.MoneyRecord" >
+    update tbl_money_record
+    <set >
+      <if test="openid != null" >
+        openid = #{openid,jdbcType=VARCHAR},
+      </if>
+      <if test="money != null" >
+        money = #{money,jdbcType=INTEGER},
+      </if>
+      <if test="balance != null" >
+        balance = #{balance,jdbcType=VARCHAR},
+      </if>
+      <if test="recordType != null" >
+        record_type = #{recordType,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="cause != null" >
+        cause = #{cause,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNum != null" >
+        order_num = #{orderNum,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where order_num = #{orderNum,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.mhc.yunxian.dao.model.MoneyRecord" >
+    update tbl_money_record
+    set openid = #{openid,jdbcType=VARCHAR},
+      money = #{money,jdbcType=INTEGER},
+      record_type = #{recordType,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="listByOrderNum" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tbl_money_record
+    where order_num = #{orderNum,jdbcType=VARCHAR} and record_type = 1
+  </select>
+</mapper>

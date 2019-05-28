@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mhc.yunxian.dao.WxUserDao">
+    <resultMap id="BaseResultMap" type="com.mhc.yunxian.dao.model.WxUser">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="openid" property="openid" jdbcType="VARCHAR"/>
+        <result column="session_id" property="sessionId" jdbcType="VARCHAR"/>
+        <result column="expiration_time" property="expirationTime" jdbcType="TIMESTAMP"/>
+        <result column="outer_ticket" property="outerTicket" jdbcType="VARCHAR"/>
+        <result column="nick_name" property="nickName" jdbcType="VARCHAR"/>
+        <result column="head_img_url" property="headImgUrl" jdbcType="VARCHAR"/>
+        <result column="version" property="version" jdbcType="VARCHAR"/>
+        <result column="sex" property="sex" jdbcType="INTEGER"/>
+        <result column="language" property="language" jdbcType="VARCHAR"/>
+        <result column="city" property="city" jdbcType="VARCHAR"/>
+        <result column="province" property="province" jdbcType="VARCHAR"/>
+        <result column="country" property="country" jdbcType="VARCHAR"/>
+        <result column="unionid" property="unionid" jdbcType="VARCHAR"/>
+        <result column="ip" property="ip" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="user_status" property="userStatus" jdbcType="INTEGER"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="is_white" property="isWhite" jdbcType="INTEGER"/>
+        <result column="dragon_but_is_open" property="dragonButIsOpen" jdbcType="INTEGER"/>
+        <result column="order_number" property="orderNumber" jdbcType="INTEGER"/>
+        <result column="gzh_openid" property="gzhOpenid" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, openid, session_id , expiration_time, outer_ticket, nick_name, head_img_url, version, sex, `language`, city,
+        province, country, unionid, ip, create_time, update_time, user_status, phone ,is_white , dragon_but_is_open,
+        order_number,gzh_openid
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_wx_user
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectByUnionid" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_wx_user
+        where unionid = #{unionid,jdbcType=VARCHAR}
+    </select>
+
+
+    <select id="countRegister" resultType="java.lang.Integer"
+            parameterType="com.mhc.yunxian.bean.OperationStatisticsRequest">
+        select
+        count(*)
+        from tbl_wx_user
+        <where>
+            <if test="year != null">
+                year(create_time) = #{year,jdbcType=VARCHAR}
+            </if>
+            <if test="month != null">
+                and MONTH(create_time) = #{month,jdbcType=VARCHAR}
+            </if>
+            <if test="day != null">
+                and DAY(create_time) = #{day,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <select id="getUserByDate" resultMap="BaseResultMap"
+            parameterType="com.mhc.yunxian.bean.OperationStatisticsRequest">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_wx_user
+        <where>
+            <trim prefix="and" prefixOverrides="AND">
+                <if test="beginDate != null">
+                    create_time > #{beginDate,jdbcType=DATE}
+                </if>
+                <if test="endDate != null">
+                    and #{endDate,jdbcType=DATE} > create_time
+                </if>
+            </trim>
+        </where>
+    </select>
+
+    <select id="selectAllUser" resultMap="BaseResultMap" parameterType="com.mhc.yunxian.bean.admin.FindWxUserRequest">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_wx_user
+        <where>
+            <if test="state == 1">
+                update_time is null
+            </if>
+            <if test="state == 2">
+                and update_time is not null
+            </if>
+            <if test="state == 3">
+                and openid in(select openid from tbl_dragon_info)
+                or is_white = 1
+            </if>
+            <if test="nickName != null">
+                and nick_name LIKE CONCAT('%',#{nickName},'%')
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectByOpenidList" resultMap="BaseResultMap" parameterType="java.util.List">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_wx_user
+        where openid in
+        <foreach collection="list" index="index" item="openid" open="(" separator="," close=")">
+            #{openid}
+        </foreach>
+        order by
+        field(
+        openid,
+        <foreach collection="list" index="index" item="openid" separator=",">
+            #{openid}
+        </foreach>
+        )
+    </select>
+
+
+    <select id="selectByOpenid" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_wx_user
+        where openid = #{openid,jdbcType=VARCHAR}
+    </select>
+    <select id="getUserBySessionId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_wx_user
+        where session_id=#{sessionId,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from tbl_wx_user
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insertSelective" parameterType="com.mhc.yunxian.dao.model.WxUser">
+        insert into tbl_wx_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="openid != null">
+                openid,
+            </if>
+            <if test="outerTicket != null">
+                outer_ticket,
+            </if>
+            <if test="nickName != null">
+                nick_name,
+            </if>
+            <if test="headImgUrl != null">
+                head_img_url,
+            </if>
+            <if test="version != null">
+                version,
+            </if>
+            <if test="sex != null">
+                sex,
+            </if>
+            <if test="language != null">
+                `language`,
+            </if>
+            <if test="city != null">
+                city,
+            </if>
+            <if test="province != null">
+                province,
+            </if>
+            <if test="country != null">
+                country,
+            </if>
+            <if test="unionid != null">
+                unionid,
+            </if>
+            <if test="ip != null">
+                ip,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="expirationTime != null">
+                expiration_time,
+            </if>
+            <if test="userStatus != null">
+                user_status,
+            </if>
+            <if test="phone != null">
+                phone,
+            </if>
+            <if test="gzhOpenid != null">
+                gzh_openid,
+            </if>
+            <if test="sessionId != null">
+                session_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="openid != null">
+                #{openid,jdbcType=VARCHAR},
+            </if>
+            <if test="outerTicket != null">
+                #{outerTicket,jdbcType=VARCHAR},
+            </if>
+            <if test="nickName != null">
+                #{nickName,jdbcType=VARCHAR},
+            </if>
+            <if test="headImgUrl != null">
+                #{headImgUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="version != null">
+                #{version,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null">
+                #{sex,jdbcType=INTEGER},
+            </if>
+            <if test="language != null">
+                #{language,jdbcType=VARCHAR},
+            </if>
+            <if test="city != null">
+                #{city,jdbcType=VARCHAR},
+            </if>
+            <if test="province != null">
+                #{province,jdbcType=VARCHAR},
+            </if>
+            <if test="country != null">
+                #{country,jdbcType=VARCHAR},
+            </if>
+            <if test="unionid != null">
+                #{unionid,jdbcType=VARCHAR},
+            </if>
+            <if test="ip != null">
+                #{ip,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="expirationTime != null">
+                #{expirationTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="userStatus != null">
+                #{userStatus,jdbcType=INTEGER},
+            </if>
+            <if test="phone != null">
+                #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="gzhOpenid != null">
+                #{gzhOpenid,jdbcType=VARCHAR},
+            </if>
+            <if test="sessionId != null">
+                #{sessionId,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateUserBySessionId" parameterType="com.mhc.yunxian.dao.model.WxUser">
+        update tbl_wx_user
+        <set>
+            <if test="openid != null">
+                openid = #{openid,jdbcType=VARCHAR}
+            </if>
+            <if test="outerTicket != null">
+                outer_ticket = #{outerTicket,jdbcType=VARCHAR},
+            </if>
+            <if test="nickName != null">
+                nick_name = #{nickName,jdbcType=VARCHAR},
+            </if>
+            <if test="headImgUrl != null">
+                head_img_url = #{headImgUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="version != null">
+                version = #{version,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null">
+                sex = #{sex,jdbcType=INTEGER},
+            </if>
+            <if test="language != null">
+                `language` = #{language,jdbcType=VARCHAR},
+            </if>
+            <if test="city != null">
+                city = #{city,jdbcType=VARCHAR},
+            </if>
+            <if test="province != null">
+                province = #{province,jdbcType=VARCHAR},
+            </if>
+            <if test="country != null">
+                country = #{country,jdbcType=VARCHAR},
+            </if>
+            <if test="unionid != null">
+                unionid = #{unionid,jdbcType=VARCHAR},
+            </if>
+            <if test="ip != null">
+                ip = #{ip,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="expirationTime != null">
+                expiration_time = #{expirationTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="userStatus != null">
+                user_status = #{userStatus,jdbcType=INTEGER},
+            </if>
+            <if test="phone != null">
+                phone = #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="isWhite != null">
+                is_white = #{isWhite,jdbcType=INTEGER},
+            </if>
+            <if test="dragonButIsOpen != null">
+                dragon_but_is_open = #{dragonButIsOpen,jdbcType=INTEGER},
+            </if>
+            <if test="orderNumber != null">
+                order_number = #{orderNumber,jdbcType=INTEGER},
+            </if>
+            <if test="gzhOpenid != null">
+                gzh_openid = #{gzhOpenid,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where session_id = #{sessionId,jdbcType=VARCHAR}
+    </update>
+    <update id="updateUserByOpenid" parameterType="com.mhc.yunxian.dao.model.WxUser">
+        update tbl_wx_user
+        <set>
+            <if test="outerTicket != null">
+                outer_ticket = #{outerTicket,jdbcType=VARCHAR},
+            </if>
+            <if test="nickName != null">
+                nick_name = #{nickName,jdbcType=VARCHAR},
+            </if>
+            <if test="headImgUrl != null">
+                head_img_url = #{headImgUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="version != null">
+                version = #{version,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null">
+                sex = #{sex,jdbcType=INTEGER},
+            </if>
+            <if test="language != null">
+                `language` = #{language,jdbcType=VARCHAR},
+            </if>
+            <if test="city != null">
+                city = #{city,jdbcType=VARCHAR},
+            </if>
+            <if test="province != null">
+                province = #{province,jdbcType=VARCHAR},
+            </if>
+            <if test="country != null">
+                country = #{country,jdbcType=VARCHAR},
+            </if>
+            <if test="unionid != null">
+                unionid = #{unionid,jdbcType=VARCHAR},
+            </if>
+            <if test="ip != null">
+                ip = #{ip,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="expirationTime != null">
+                expiration_time = #{expirationTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="userStatus != null">
+                user_status = #{userStatus,jdbcType=INTEGER},
+            </if>
+            <if test="phone != null">
+                phone = #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="isWhite != null">
+                is_white = #{isWhite,jdbcType=INTEGER},
+            </if>
+            <if test="dragonButIsOpen != null">
+                dragon_but_is_open = #{dragonButIsOpen,jdbcType=INTEGER},
+            </if>
+            <if test="orderNumber != null">
+                order_number = #{orderNumber,jdbcType=INTEGER},
+            </if>
+            <if test="gzhOpenid != null">
+                gzh_openid = #{gzhOpenid,jdbcType=VARCHAR},
+            </if>
+            <if test="sessionId != null">
+                session_id = #{sessionId,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where openid = #{openid,jdbcType=VARCHAR}
+    </update>
+    <select id="getAllUserForDataSync" resultMap="BaseResultMap">
+        select * from tbl_wx_user where is_white=1
+        <!--and dragon_but_is_open=1-->
+    </select>
+
+</mapper>

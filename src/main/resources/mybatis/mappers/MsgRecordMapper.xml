@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mhc.yunxian.dao.MsgRecordMapper">
+  <resultMap id="BaseResultMap" type="com.mhc.yunxian.dao.model.MsgRecord">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="open_id" jdbcType="VARCHAR" property="openId" />
+    <result column="msg_type" jdbcType="INTEGER" property="msgType" />
+    <result column="msg_content" jdbcType="VARCHAR" property="msgContent" />
+    <result column="role" jdbcType="INTEGER" property="role" />
+    <result column="jump_url" jdbcType="VARCHAR" property="jumpUrl" />
+    <result column="is_read" jdbcType="INTEGER" property="isRead" />
+    <result column="is_deleted" jdbcType="INTEGER" property="isDeleted" />
+    <result column="read_time" jdbcType="TIMESTAMP" property="readTime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, open_id, msg_type, msg_content, `role`, jump_url, is_read, is_deleted, read_time, create_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tbl_msg_record
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tbl_msg_record
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.mhc.yunxian.dao.model.MsgRecord">
+    insert into tbl_msg_record (id, open_id, msg_type, msg_content,
+      `role`, jump_url, is_read, 
+      is_deleted, read_time, create_time
+      )
+    values (#{id,jdbcType=INTEGER}, #{openId,jdbcType=VARCHAR}, #{msgType,jdbcType=INTEGER}, #{msgContent,jdbcType=VARCHAR}
+      #{role,jdbcType=INTEGER}, #{jumpUrl,jdbcType=VARCHAR}, #{isRead,jdbcType=INTEGER}, 
+      #{isDeleted,jdbcType=INTEGER}, #{readTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.mhc.yunxian.dao.model.MsgRecord">
+    insert into tbl_msg_record
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="openId != null">
+        open_id,
+      </if>
+      <if test="msgType != null">
+        msg_type,
+      </if>
+      <if test="msgContent != null">
+        msg_content,
+      </if>
+      <if test="role != null">
+        `role`,
+      </if>
+      <if test="jumpUrl != null">
+        jump_url,
+      </if>
+      <if test="isRead != null">
+        is_read,
+      </if>
+      <if test="isDeleted != null">
+        is_deleted,
+      </if>
+      <if test="readTime != null">
+        read_time,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="openId != null">
+        #{openId,jdbcType=VARCHAR},
+      </if>
+      <if test="msgType != null">
+        #{msgType,jdbcType=INTEGER},
+      </if>
+      <if test="msgContent != null">
+        #{msgContent,jdbcType=VARCHAR},
+      </if>
+      <if test="role != null">
+        #{role,jdbcType=INTEGER},
+      </if>
+      <if test="jumpUrl != null">
+        #{jumpUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="isRead != null">
+        #{isRead,jdbcType=INTEGER},
+      </if>
+      <if test="isDeleted != null">
+        #{isDeleted,jdbcType=INTEGER},
+      </if>
+      <if test="readTime != null">
+        #{readTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.mhc.yunxian.dao.model.MsgRecord">
+    update tbl_msg_record
+    <set>
+      <if test="openId != null">
+        open_id = #{openId,jdbcType=VARCHAR},
+      </if>
+      <if test="msgType != null">
+        msg_type = #{msgType,jdbcType=INTEGER},
+      </if>
+      <if test="msgContent != null">
+        msg_content = #{msgContent,jdbcType=VARCHAR},
+      </if>
+      <if test="role != null">
+        `role` = #{role,jdbcType=INTEGER},
+      </if>
+      <if test="jumpUrl != null">
+        jump_url = #{jumpUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="isRead != null">
+        is_read = #{isRead,jdbcType=INTEGER},
+      </if>
+      <if test="isDeleted != null">
+        is_deleted = #{isDeleted,jdbcType=INTEGER},
+      </if>
+      <if test="readTime != null">
+        read_time = #{readTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.mhc.yunxian.dao.model.MsgRecord">
+    update tbl_msg_record
+    set open_id = #{openId,jdbcType=VARCHAR},
+      msg_type = #{msgType,jdbcType=INTEGER},
+      msg_content = #{msgContent,jdbcType=INTEGER},
+      `role` = #{role,jdbcType=INTEGER},
+      jump_url = #{jumpUrl,jdbcType=VARCHAR},
+      is_read = #{isRead,jdbcType=INTEGER},
+      is_deleted = #{isDeleted,jdbcType=INTEGER},
+      read_time = #{readTime,jdbcType=TIMESTAMP},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="queryMsgRecord" parameterType="com.mhc.yunxian.bean.request.query.MsgRecordQuery" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from tbl_msg_record
+    where
+    1=1
+    <include refid="query_condition"/>
+    <include refid="order_by_is_read"/>
+  </select>
+
+  <sql id="query_condition">
+    <trim prefix="AND" prefixOverrides="AND">
+        <if test="openId !=null">
+          and open_id = #{openId,jdbcType=VARCHAR}
+        </if>
+        <if test="role !=null">
+          and `role` = #{role,jdbcType=INTEGER}
+        </if>
+        <if test="isRead !=null">
+          and is_read = #{isRead,jdbcType=INTEGER}
+        </if>
+        <if test="msgType !=null">
+          and msg_type = #{msgType,jdbcType=INTEGER}
+        </if>
+        <if test="isDelete !=null">
+          and is_deleted = #{isDelete,jdbcType=INTEGER}
+        </if>
+    </trim>
+  </sql>
+
+  <sql id="order_by_is_read">
+    <choose>
+        <!--已读消息按阅读时间排序，其他按创建时间排序-->
+        <when test="isRead == 1">
+          order by read_time desc
+        </when>
+        <otherwise>
+          order by create_time desc
+        </otherwise>
+    </choose>
+    limit #{offset},#{pageSize}
+  </sql>
+
+</mapper>

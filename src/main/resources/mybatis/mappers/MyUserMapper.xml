@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mhc.yunxian.dao.MyUserDao" >
+  <resultMap id="BaseResultMap" type="com.mhc.yunxian.dao.model.MyUser" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="user_openid" property="userOpenid" jdbcType="VARCHAR" />
+    <result column="my_openid" property="myOpenid" jdbcType="VARCHAR" />
+    <result column="buy_time" property="buyTime" jdbcType="INTEGER" />
+    <result column="total_money" property="totalMoney" jdbcType="DECIMAL" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, user_openid, my_openid, buy_time, total_money, update_time, create_time
+  </sql>
+
+
+  <select id="selectAllMyUser" resultMap="BaseResultMap" parameterType="com.mhc.yunxian.bean.GetMyUserRequest" >
+    select a.*,b.nick_name
+    from tbl_my_user a
+    LEFT JOIN tbl_wx_user b
+    on a.user_openid = b.openid
+    <where>
+      <if test="nickName != null">
+        b.nick_name LIKE CONCAT('%',#{nickName},'%')
+      </if>
+      <if test="openid != null">
+        and a.my_openid = #{openid,jdbcType=VARCHAR}
+      </if>
+      <if test="year != null">
+        and year(a.create_time) = #{year,jdbcType=VARCHAR}
+      </if>
+      <if test="month != null">
+        and MONTH(a.create_time) = #{month,jdbcType=VARCHAR}
+      </if>
+      <if test="day != null">
+        and DAY(a.create_time) = #{day,jdbcType=VARCHAR}
+      </if>
+      <if test="week != null">
+        and year(a.create_time) = year(#{week,jdbcType=VARCHAR})
+        and YEARWEEK(a.create_time,1) = YEARWEEK(#{week,jdbcType=VARCHAR},1)
+      </if>
+    </where>
+    <if test="state == 0">
+      order by a.update_time desc
+    </if>
+    <if test="state == 1">
+      order by a.total_money desc
+    </if>
+    <if test="state == 2">
+      order by a.buy_time desc
+    </if>
+  </select>
+
+  <select id="selectMyUser" resultMap="BaseResultMap"  >
+    select
+    <include refid="Base_Column_List" />
+    from tbl_my_user
+    where user_openid = #{arg0} and my_openid = #{arg1}
+  </select>
+
+  <select id="countMyUserNumber" resultType="java.lang.Integer" parameterType="java.util.Map">
+    select count(*)
+    from tbl_my_user
+    <where>
+      <if test="year != null">
+        year(create_time) = #{year,jdbcType=VARCHAR}
+      </if>
+      <if test="month != null">
+        and MONTH(create_time) = #{month,jdbcType=VARCHAR}
+      </if>
+      <if test="day != null">
+        and DAY(create_time) = #{day,jdbcType=VARCHAR}
+      </if>
+      <if test="week != null">
+        and year(create_time) = year(#{week,jdbcType=VARCHAR})
+        and YEARWEEK(create_time,1) = YEARWEEK(#{week,jdbcType=VARCHAR},1)
+      </if>
+      <if test="lastYear != null">
+        and year(create_time) = year(#{lastYear,jdbcType=VARCHAR})
+      </if>
+      <if test="lastMonth != null">
+        and year(create_time) = year(#{lastMonth,jdbcType=VARCHAR})
+        and MONTH(create_time) = MONTH(#{lastMonth,jdbcType=VARCHAR})
+      </if>
+      <if test="lastDay != null">
+        and year(create_time) = year(#{lastDay,jdbcType=VARCHAR})
+        and MONTH(create_time) = MONTH(#{lastDay,jdbcType=VARCHAR})
+        and DAY(create_time) = DAY(#{lastDay,jdbcType=VARCHAR})
+      </if>
+      <if test="lastWeek != null">
+        and year(create_time) = year(#{lastWeek,jdbcType=VARCHAR})
+        and YEARWEEK(create_time,1) = YEARWEEK(#{lastWeek,jdbcType=VARCHAR},1)
+      </if>
+      <if test="openid != null">
+        and my_openid = #{openid,jdbcType=VARCHAR}
+      </if>
+    </where>
+
+  </select>
+
+  <update id="updateUser" parameterType="com.mhc.yunxian.dao.model.MyUser" >
+    update tbl_my_user
+    <set >
+      <if test="userOpenid != null" >
+        user_openid = #{userOpenid,jdbcType=VARCHAR},
+      </if>
+      <if test="buyTime != null" >
+        buy_time = #{buyTime,jdbcType=INTEGER},
+      </if>
+      <if test="totalMoney != null" >
+        total_money = #{totalMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where  my_openid = #{myOpenid,jdbcType=VARCHAR}
+    and  user_openid = #{userOpenid,jdbcType=VARCHAR}
+  </update>
+
+  <insert id="insertMyUser" parameterType="com.mhc.yunxian.dao.model.MyUser" >
+    insert into tbl_my_user
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="userOpenid != null" >
+        user_openid,
+      </if>
+      <if test="myOpenid != null" >
+        my_openid,
+      </if>
+      <if test="buyTime != null" >
+        buy_time,
+      </if>
+      <if test="totalMoney != null" >
+        total_money,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="userOpenid != null" >
+        #{userOpenid,jdbcType=VARCHAR},
+      </if>
+      <if test="myOpenid != null" >
+        #{myOpenid,jdbcType=VARCHAR},
+      </if>
+      <if test="buyTime != null" >
+        #{buyTime,jdbcType=INTEGER},
+      </if>
+      <if test="totalMoney != null" >
+        #{totalMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="countBy" resultType="Integer" >
+    select
+      if((sum(ifnull(buy_time,0)) - count(*)) &lt; 0,0,sum(ifnull(buy_time,0)) - count(*)) as total
+    from tbl_my_user
+  </select>
+
+  <select id="getAll" resultMap="BaseResultMap">
+    select * from tbl_my_user
+  </select>
+</mapper>

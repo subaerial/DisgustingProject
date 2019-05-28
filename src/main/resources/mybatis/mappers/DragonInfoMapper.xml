@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mhc.yunxian.dao.DragonInfoDao">
+    <resultMap id="BaseResultMap" type="com.mhc.yunxian.dao.model.DragonInfo">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="dragon_num" property="dragonNum" jdbcType="VARCHAR"/>
+        <result column="dragon_title" property="dragonTitle" jdbcType="VARCHAR"/>
+        <result column="dragon_desc" property="dragonDesc" jdbcType="VARCHAR"/>
+        <result column="dragon_img" property="dragonImg" jdbcType="VARCHAR"/>
+        <result column="end_time" property="endTime" jdbcType="VARCHAR"/>
+        <result column="send_time" property="sendTime" jdbcType="VARCHAR"/>
+        <result column="cash_on_delivery" property="cashOnDelivery" jdbcType="INTEGER"/>
+        <result column="addr" property="addr" jdbcType="VARCHAR"/>
+        <result column="openid" property="openid" jdbcType="VARCHAR"/>
+        <result column="dragon_status" property="dragonStatus" jdbcType="INTEGER"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="is_pay_later" property="isPayLater" jdbcType="INTEGER"/>
+        <result column="sub_dragon_num" property="subDragonNum" jdbcType="VARCHAR"/>
+        <result column="is_delivery" property="isDelivery" jdbcType="INTEGER"/>
+        <result column="global_limit" property="globalLimit" jdbcType="INTEGER"/>
+        <result column="is_coupon" property="isCoupon" jdbcType="TINYINT"/>
+        <result column="dragon_video" property="dragonVideo" jdbcType="VARCHAR"/>
+        <result column="cut_off_time" property="cutOffTime" jdbcType="VARCHAR"/>
+        <result column="delivery_cycle" property="deliveryCycle" jdbcType="VARCHAR"/>
+
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, dragon_num, dragon_title, dragon_desc, dragon_img, end_time, send_time, cash_on_delivery, 
+    addr, openid, dragon_status, update_time, create_time, phone , is_pay_later , sub_dragon_num,
+    is_delivery,global_limit,is_coupon,dragon_video,cut_off_time,delivery_cycle
+  </sql>
+
+    <select id="selectAllDragonOpenid" resultType="java.lang.String">
+	select openid from (
+	select MIN(rownum),openid from (
+	SELECT @rownum:=@rownum+1 AS rownum, tbl_dragon_info.*
+FROM (SELECT @rownum:=0) r, tbl_dragon_info ORDER BY dragon_status ASC , id DESC) a GROUP BY openid ORDER BY rownum ASC) b
+  </select>
+
+
+    <select id="selectAllDragon" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_dragon_info
+        where dragon_status = 0
+        order by id DESC
+        limit #{pageNo},8
+    </select>
+
+    <select id="countSellerNumByTime" resultType="java.lang.Integer"
+            parameterType="com.mhc.yunxian.bean.OperationStatisticsRequest">
+
+        select count(*) from (select * from tbl_dragon_info GROUP BY openid) a
+
+        <where>
+            <if test="year != null">
+                year(a.create_time) = #{year,jdbcType=VARCHAR}
+            </if>
+            <if test="month != null">
+                and MONTH(a.create_time) = #{month,jdbcType=VARCHAR}
+            </if>
+            <if test="day != null">
+                and DAY(a.create_time) = #{day,jdbcType=VARCHAR}
+            </if>
+        </where>
+
+
+    </select>
+
+    <select id="selectDragonByStatusAndOpenid" resultMap="BaseResultMap"
+            parameterType="com.mhc.yunxian.dao.model.DragonInfo">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_dragon_info
+        where dragon_status = #{dragonStatus,jdbcType=INTEGER}
+        and openid = #{openid,jdbcType=VARCHAR}
+        order by id DESC
+    </select>
+
+    <select id="selectAllDragonInfo" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_dragon_info
+        order by id DESC
+    </select>
+
+    <select id="selectAllDragonIndex" resultType="java.lang.Integer">
+    select count(*) from tbl_dragon_info
+  </select>
+
+
+    <select id="getAllDragonWithEndTime" resultMap="BaseResultMap">
+    select
+    dragon_num,end_time
+    from tbl_dragon_info
+  </select>
+
+
+    <select id="selectDragon" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_dragon_info
+        where dragon_num = #{dragonNum,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectDragonBySubDragonNum" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_dragon_info
+        where sub_dragon_num = #{subDragonNum,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="delDragon" parameterType="java.lang.String">
+    delete from tbl_dragon_info
+    where dragon_num = #{dragonNum,jdbcType=VARCHAR}
+  </delete>
+
+
+    <select id="selectDragonByOpenid" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_dragon_info
+        where openid = #{openid,jdbcType=VARCHAR}
+        order by id DESC
+    </select>
+
+    <select id="selectNoEndDragonByOpenid" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_dragon_info
+        where openid = #{openid,jdbcType=VARCHAR}
+        and dragon_status = 0
+        order by id DESC
+    </select>
+
+    <!--<select id="findByOpenIdAndGoodsNum" resultMap="BaseResultMap">-->
+    <!--select-->
+    <!--<include refid="Base_Column_List" />-->
+    <!--from tbl_dragon_info di-->
+    <!--left join tbl_dragon_goods dg on dg.dragon_num = di.dragon_num-->
+    <!--where di.openid = #{openId} and dg.goods_num = #{goodsNum}-->
+    <!--and di.dragon_status = 0-->
+    <!--order by di.create_time DESC-->
+    <!--limit 1-->
+    <!--</select>-->
+
+    <update id="updateDragon" parameterType="com.mhc.yunxian.dao.model.DragonInfo">
+        update tbl_dragon_info
+        <set>
+
+            <if test="dragonTitle != null">
+                dragon_title = #{dragonTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="dragonDesc != null">
+                dragon_desc = #{dragonDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="dragonImg != null">
+                dragon_img = #{dragonImg,jdbcType=VARCHAR},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime,jdbcType=VARCHAR},
+            </if>
+            <if test="sendTime != null">
+                send_time = #{sendTime,jdbcType=VARCHAR},
+            </if>
+            <if test="cashOnDelivery != null">
+                cash_on_delivery = #{cashOnDelivery,jdbcType=INTEGER},
+            </if>
+            <if test="openid != null">
+                openid = #{openid,jdbcType=VARCHAR},
+            </if>
+            <if test="dragonStatus != null">
+                dragon_status = #{dragonStatus,jdbcType=INTEGER},
+            </if>
+            <if test="addr != null">
+                addr = #{addr,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="phone != null">
+                phone = #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="isPayLater != null">
+                is_pay_later = #{isPayLater,jdbcType=INTEGER},
+            </if>
+            <if test="isDelivery != null">
+                is_delivery = #{isDelivery,jdbcType=INTEGER},
+            </if>
+            <if test="globalLimit != null">
+                global_limit = #{globalLimit,jdbcType=INTEGER},
+            </if>
+            <if test="subDragonNum != null">
+                sub_dragon_num = #{subDragonNum,jdbcType=VARCHAR},
+            </if>
+            <if test="isCoupon != null">
+                is_coupon = #{isCoupon,jdbcType=TINYINT},
+            </if>
+            <if test="dragonVideo != null">
+                dragon_video = #{dragonVideo,jdbcType=VARCHAR},
+            </if>
+            <if test="deliveryCycle != null">
+                delivery_cycle= #{deliveryCycle,jdbcType=VARCHAR},
+            </if>
+            <if test="cutOffTime != null">
+                cut_off_time = #{cutOffTime,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where dragon_num = #{dragonNum,jdbcType=VARCHAR}
+    </update>
+
+
+    <insert id="insertDragon" parameterType="com.mhc.yunxian.dao.model.DragonInfo">
+        insert into tbl_dragon_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="dragonNum != null">
+                dragon_num,
+            </if>
+            <if test="dragonTitle != null">
+                dragon_title,
+            </if>
+            <if test="dragonDesc != null">
+                dragon_desc,
+            </if>
+            <if test="dragonImg != null">
+                dragon_img,
+            </if>
+            <if test="endTime != null">
+                end_time,
+            </if>
+            <if test="sendTime != null">
+                send_time,
+            </if>
+            <if test="cashOnDelivery != null">
+                cash_on_delivery,
+            </if>
+            <if test="addr != null">
+                addr,
+            </if>
+            <if test="openid != null">
+                openid,
+            </if>
+            <if test="dragonStatus != null">
+                dragon_status,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="phone != null">
+                phone,
+            </if>
+            <if test="isPayLater != null">
+                is_pay_later,
+            </if>
+            <if test="isDelivery != null">
+                is_delivery,
+            </if>
+            <if test="globalLimit != null">
+                global_limit,
+            </if>
+            <if test="isCoupon != null">
+                is_coupon,
+            </if>
+            <if test="dragonVideo != null">
+                dragon_video,
+            </if>
+            <if test="cutOffTime != null">
+                cut_off_time,
+            </if>
+            <if test="deliveryCycle != null">
+                delivery_cycle,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="dragonNum != null">
+                #{dragonNum,jdbcType=VARCHAR},
+            </if>
+            <if test="dragonTitle != null">
+                #{dragonTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="dragonDesc != null">
+                #{dragonDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="dragonImg != null">
+                #{dragonImg,jdbcType=VARCHAR},
+            </if>
+            <if test="endTime != null">
+                #{endTime,jdbcType=VARCHAR},
+            </if>
+            <if test="sendTime != null">
+                #{sendTime,jdbcType=VARCHAR},
+            </if>
+            <if test="cashOnDelivery != null">
+                #{cashOnDelivery,jdbcType=INTEGER},
+            </if>
+            <if test="addr != null">
+                #{addr,jdbcType=VARCHAR},
+            </if>
+            <if test="openid != null">
+                #{openid,jdbcType=VARCHAR},
+            </if>
+            <if test="dragonStatus != null">
+                #{dragonStatus,jdbcType=INTEGER},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="phone != null">
+                #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="isPayLater != null">
+                #{isPayLater,jdbcType=INTEGER},
+            </if>
+            <if test="isDelivery != null">
+                #{isDelivery,jdbcType=INTEGER},
+            </if>
+            <if test="globalLimit != null">
+                #{globalLimit,jdbcType=INTEGER},
+            </if>
+            <if test="isCoupon != null">
+                #{isCoupon,jdbcType=TINYINT},
+            </if>
+            <if test="dragonVideo != null">
+                #{dragonVideo,jdbcType=VARCHAR},
+            </if>
+            <if test="cutOffTime != null">
+                #{cutOffTime,jdbcType=VARCHAR},
+            </if>
+            <if test="deliveryCycle != null">
+                #{deliveryCycle,jdbcType=VARCHAR},
+            </if>
+
+        </trim>
+    </insert>
+
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_dragon_info
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+
+    <select id="countBy" resultType="com.mhc.yunxian.vo.CountVO">
+        select
+          count(*) as total,
+          dragon_status as state
+        from tbl_dragon_info
+        group by dragon_status
+    </select>
+
+    <select id="selectLatestThreeShopOfDragon" resultType="java.lang.String">
+        select openid
+        from tbl_dragon_info
+        where dragon_status = 0
+--         and  end_time > now()
+        GROUP BY openid
+        order by create_time DESC
+        LIMIT 3
+    </select>
+
+    <select id="queryLatestDragon" resultMap="BaseResultMap" parameterType="com.mhc.yunxian.dao.query.DragonInfoQuery">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_dragon_info
+        where 1=1
+        <if test="openid !=null">
+            and openid=#{openid}
+        </if>
+        <if test="dragonStatus !=null">
+            and dragon_status=#{dragonStatus}
+        </if>
+        order by id desc
+        limit #{offset},#{pageSize}
+    </select>
+
+    <select id="selectDragonByStatusAndCycle" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from  tbl_dragon_info
+        where dragon_status = 1 and delivery_cycle is NOT NULL
+    </select>
+
+    <select id="selectDragonOrderCountInfo" resultType="com.mhc.yunxian.bean.DragonOrderCount">
+        SELECT
+        u.nick_name as nickName,
+        u.head_img_url as headImg,
+        o.order_num as orderNum,
+        o.address as address,
+        o.addr_phone as addrPhone,
+        o.addr_name as addrName,
+        o.dragon_addr as dragonAddr,
+        o.is_delivery as isDelivery
+        from tbl_order_info o
+        LEFT JOIN tbl_dragon_info d on o.dragon_num = d.dragon_num
+        LEFT JOIN tbl_wx_user  u on o.openid = u.openid
+        WHERE d.dragon_num = #{dragonNum}
+        and o.order_status in (1,2,3)
+        and o.parent_order_num is null
+        ORDER BY  o.create_time
+    </select>
+</mapper>

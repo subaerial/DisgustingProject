@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mhc.yunxian.dao.DrawMoneyDao" >
+  <resultMap id="BaseResultMap" type="com.mhc.yunxian.dao.model.DrawMoney" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="draw_money" property="drawMoney" jdbcType="INTEGER" />
+    <result column="openid" property="openid" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="form_id" property="formId" jdbcType="VARCHAR" />
+    <result column="draw_type" property="drawType" jdbcType="INTEGER" />
+    <result column="rate" property="rate" jdbcType="VARCHAR" />
+    <result column="draw_order_num" property="drawOrderNum" jdbcType="VARCHAR" />
+    <result column="payment_no" property="paymentNo" jdbcType="VARCHAR" />
+    <result column="payment_time" property="paymentTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, draw_money, openid, status , create_time, update_time,form_id,draw_type,rate,draw_order_num
+  </sql>
+
+
+
+
+
+
+  <select id="selectByOpenid" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tbl_draw_money
+    where openid = #{openid,jdbcType=VARCHAR}
+    order by id DESC
+  </select>
+  <select id="selectByStatus" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from tbl_draw_money order by create_time desc
+  </select>
+
+
+  <select id="selectByOpenIdAndFormId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tbl_draw_money
+    where openid = #{arg0}
+    and form_id = #{arg1}
+  </select>
+
+
+
+
+  <update id="updateDrawMoney" parameterType="com.mhc.yunxian.dao.model.DrawMoney" >
+    update tbl_draw_money
+    <set >
+      <if test="drawMoney != null" >
+        draw_money = #{drawMoney,jdbcType=INTEGER},
+      </if>
+      <if test="drawType != null" >
+        draw_type = #{drawType,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="formId != null" >
+        form_id = #{formId,jdbcType=VARCHAR},
+      </if>
+      <if test="rate != null" >
+        rate = #{rate,jdbcType=VARCHAR},
+      </if>
+      <if test="drawOrderNum != null" >
+        draw_order_num = #{drawOrderNum,jdbcType=VARCHAR},
+      </if>
+      <if test="paymentNo != null" >
+        payment_no = #{paymentNo,jdbcType=VARCHAR},
+      </if>
+      <if test="paymentTime != null" >
+        payment_time = #{paymentTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbl_draw_money
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from tbl_draw_money
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.mhc.yunxian.dao.model.DrawMoney" >
+    insert into tbl_draw_money
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="drawMoney != null" >
+        draw_money,
+      </if>
+      <if test="drawType != null" >
+        draw_type,
+      </if>
+      <if test="openid != null" >
+        openid,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="formId != null" >
+        form_id,
+      </if>
+      <if test="rate != null" >
+        rate,
+      </if>
+      <if test="drawOrderNum != null" >
+        draw_order_num,
+      </if>
+      <if test="paymentNo != null" >
+        payment_no,
+      </if>
+      <if test="paymentTime != null" >
+        payment_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="drawMoney != null" >
+        #{drawMoney,jdbcType=INTEGER},
+      </if>
+      <if test="drawType != null" >
+        #{drawType,jdbcType=INTEGER},
+      </if>
+      <if test="openid != null" >
+        #{openid,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="formId != null">
+        #{formId,jdbcType=VARCHAR},
+      </if>
+      <if test="rate != null">
+        #{rate,jdbcType=VARCHAR},
+      </if>
+      <if test="drawOrderNum != null">
+        #{drawOrderNum,jdbcType=VARCHAR},
+      </if>
+      <if test="paymentNo != null" >
+        #{paymentNo,jdbcType=VARCHAR},
+      </if>
+      <if test="paymentTime != null" >
+        #{paymentTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.mhc.yunxian.dao.model.DrawMoney" >
+    update tbl_draw_money
+    <set >
+      <if test="drawMoney != null" >
+        draw_money = #{drawMoney,jdbcType=INTEGER},
+      </if>
+      <if test="drawType != null" >
+        draw_type = #{drawType,jdbcType=INTEGER},
+      </if>
+      <if test="openid != null" >
+        openid = #{openid,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="formId != null" >
+        form_id = #{formId,jdbcType=VARCHAR},
+      </if>
+      <if test="rate != null" >
+        rate = #{rate,jdbcType=VARCHAR},
+      </if>
+      <if test="drawOrderNum != null" >
+        draw_order_num = #{drawOrderNum,jdbcType=VARCHAR},
+      </if>
+      <if test="paymentNo != null" >
+        payment_no = #{paymentNo,jdbcType=VARCHAR},
+      </if>
+      <if test="paymentTime != null" >
+        payment_time = #{paymentTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

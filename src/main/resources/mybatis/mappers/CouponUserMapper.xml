@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mhc.yunxian.dao.CouponUserDao">
+    <resultMap id="BaseResultMap" type="com.mhc.yunxian.dao.model.CouponUser">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="user_id" property="userId" jdbcType="INTEGER"/>
+        <result column="coupon_id" property="couponId" jdbcType="INTEGER"/>
+        <result column="gmt_create_time" property="gmtCreateTime" jdbcType="TIMESTAMP"/>
+        <result column="is_used" property="isUsed" jdbcType="INTEGER"/>
+    </resultMap>
+    <resultMap id="BuyerDetailMap" type="com.mhc.yunxian.bean.coupon.BuyerDetail">
+        <result column="id" property="couponUserId" jdbcType="INTEGER"/>
+        <result column="is_used" property="isUsed" jdbcType="INTEGER"/>
+        <result column="nick_name" property="nickName" jdbcType="VARCHAR"/>
+        <result column="gmt_create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="head_img_url" property="headImage" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="MyGotCouponMap" type="com.mhc.yunxian.bean.coupon.MyGotCouponDetail">
+        <result column="coupon_id" property="couponId" jdbcType="INTEGER"/>
+        <result column="coupon_type" property="couponType" jdbcType="INTEGER"/>
+        <result column="coupon_amount" property="couponAmount" jdbcType="INTEGER"/>
+        <result column="gmt_end_time" property="gmtEndTime" jdbcType="TIMESTAMP"/>
+        <result column="state" property="state" jdbcType="INTEGER"/>
+        <result column="is_used" property="isUsed" jdbcType="INTEGER"/>
+        <result column="openid" property="sellerOpenid" jdbcType="VARCHAR"/>
+        <result column="gmt_start_time" property="gmtStartTime" jdbcType="TIMESTAMP"/>
+        <result column="goods_num" property="goodsNum" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="CanUseCouponMap" type="com.mhc.yunxian.bean.coupon.CanUseCouponDetail">
+        <result column="coupon_type" property="couponType" jdbcType="INTEGER"/>
+        <result column="coupon_amount" property="couponAmount" jdbcType="INTEGER"/>
+        <result column="gmt_end_time" property="gmtEndTime" jdbcType="TIMESTAMP"/>
+        <result column="goods_num" property="goodsNum" jdbcType="VARCHAR"/>
+        <result column="state" property="state" jdbcType="INTEGER"/>
+        <result column="is_used" property="isUsed" jdbcType="INTEGER"/>
+        <result column="is_expire" property="isExpire" jdbcType="INTEGER"/>
+        <result column="can_use" property="canUse" jdbcType="INTEGER"/>
+        <result column="coupon_user_id" property="couponUserId" jdbcType="INTEGER"/>
+        <result column="gmt_start_time" property="gmtStartTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, user_id, coupon_id, gmt_create_time, is_used
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_coupon_user
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectByUidAndCouponId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_coupon_user
+        where user_id = #{arg0}
+        and coupon_id = #{arg1}
+    </select>
+
+    <select id="myGotCouponList" resultMap="MyGotCouponMap" parameterType="java.lang.Integer">
+        SELECT
+        b.coupon_id,
+        b.coupon_type,
+        b.coupon_amount,
+        a.is_used,
+        b.gmt_end_time,
+        b.state,
+        c.openid,
+        b.gmt_start_time,
+        b.goods_num
+        FROM
+        tbl_coupon_user a
+        LEFT JOIN tbl_coupon b ON a.coupon_id = b.coupon_id
+        LEFT JOIN tbl_wx_user c ON b.user_id = c.id
+        where
+        a.user_id = #{uid,jdbcType=INTEGER} and b.gmt_end_time > now()
+        ORDER BY b.gmt_end_time DESC
+    </select>
+
+
+    <select id="getAllCouponList" resultMap="MyGotCouponMap" parameterType="java.lang.Integer">
+        SELECT
+        a.coupon_id,
+        b.coupon_type,
+        b.coupon_amount,
+        a.is_used,
+        b.gmt_end_time,
+        b.state,
+        c.openid,
+        b.gmt_start_time,
+        b.goods_num
+        FROM
+        tbl_coupon_user a
+        LEFT JOIN tbl_coupon b ON a.coupon_id = b.coupon_id
+        LEFT JOIN tbl_wx_user c ON b.user_id = c.id
+        where
+        a.user_id = #{uid,jdbcType=INTEGER}
+        ORDER BY b.gmt_end_time DESC
+    </select>
+
+
+    <select id="selectCanUseCouponNum" resultType="java.lang.Integer" parameterType="java.util.Map">
+        SELECT
+        count( * )
+        FROM
+        tbl_coupon_user a
+        LEFT JOIN tbl_coupon b ON a.coupon_id = b.coupon_id
+        LEFT JOIN tbl_wx_user c ON b.user_id = c.id
+        LEFT JOIN tbl_goods_info d ON b.goods_num = d.goods_num
+        WHERE
+        a.is_used = 0
+        AND b.state = 0
+        AND a.user_id = #{uid}
+        AND b.gmt_end_time > now()
+        AND (
+        c.openid = #{openid}
+        OR b.goods_num IN
+        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        )
+    </select>
+
+    <select id="selectCanUseCoupon" resultMap="CanUseCouponMap" parameterType="java.util.Map">
+        SELECT
+        b.coupon_type,
+        b.coupon_amount,
+        a.is_used,
+        b.gmt_end_time,
+        d.goods_name,
+        b.state,
+        c.openid,
+        b.gmt_start_time,
+        a.id as coupon_user_id,
+        case
+        when b.gmt_end_time > now() then 0
+        else 1 end as is_expire,
+        case
+        when c.openid = #{openid} or b.goods_num in
+        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        then 1
+        else 0 end as can_use
+        FROM
+        tbl_coupon_user a
+        LEFT JOIN tbl_coupon b ON a.coupon_id = b.coupon_id
+        LEFT JOIN tbl_wx_user c ON b.user_id = c.id
+        LEFT JOIN tbl_goods_info d ON b.goods_num = d.goods_num
+        WHERE a.user_id = #{uid}
+        ORDER BY a.is_used ASC , can_use DESC , is_expire ASC
+    </select>
+
+    <select id="selectBuyerDetailByCouponId" resultMap="BuyerDetailMap" parameterType="java.lang.Integer">
+        SELECT
+        a.id,
+        b.nick_name,
+        b.head_img_url,
+        a.gmt_create_time,
+        a.is_used
+        FROM
+        tbl_coupon_user a
+        LEFT JOIN tbl_wx_user b ON a.user_id = b.id
+        WHERE
+        a.coupon_id = #{couponId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from tbl_coupon_user
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insertSelective" parameterType="com.mhc.yunxian.dao.model.CouponUser">
+        insert into tbl_coupon_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="couponId != null">
+                coupon_id,
+            </if>
+            <if test="gmtCreateTime != null">
+                gmt_create_time,
+            </if>
+            <if test="isUsed != null">
+                is_used,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="couponId != null">
+                #{couponId,jdbcType=INTEGER},
+            </if>
+            <if test="gmtCreateTime != null">
+                #{gmtCreateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isUsed != null">
+                #{isUsed,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.mhc.yunxian.dao.model.CouponUser">
+        update tbl_coupon_user
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="couponId != null">
+                coupon_id = #{couponId,jdbcType=INTEGER},
+            </if>
+            <if test="gmtCreateTime != null">
+                gmt_create_time = #{gmtCreateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isUsed != null">
+                is_used = #{isUsed,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+
+    <select id="getEffectCoupon" resultType="java.lang.Integer">
+        SELECT
+        count( * )
+        FROM
+        tbl_coupon_user cu
+        left join tbl_coupon c on c.coupon_id = cu.coupon_id
+        WHERE
+        cu.user_id = #{buyId}
+        and cu.is_used = 0
+        and c.state = 0
+        and c.gmt_end_time > now()
+        and c.user_id = #{sellId}
+    </select>
+
+    <select id="listEffectCoupon" resultType="com.mhc.yunxian.bean.coupon.CanUseCouponDetail">
+        SELECT
+        c.coupon_id as couponId,
+        c.coupon_type as couponType,
+        c.coupon_amount as couponAmount,
+        c.gmt_end_time as gmtEndTime,
+        c.state as state,
+        cu.is_used as isUsed,
+        c.goods_num as goodsNum,
+        c.gmt_start_time as gmtStartTime,
+        c.gmt_create_time as gmtCreateTime,
+        cu.id as couponUserId
+        FROM
+        tbl_coupon_user cu
+        left join tbl_coupon c on c.coupon_id = cu.coupon_id
+        WHERE cu.user_id = #{buyId}
+        and c.gmt_end_time > now()
+        and cu.is_used = 0
+        and c.user_id = #{sellId}
+        order by c.gmt_create_time desc
+    </select>
+    <select id="countCouponUsedAmount" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        tbl_coupon_user
+        WHERE
+        coupon_id=#{couponId}
+        and is_used = 1
+    </select>
+
+</mapper>

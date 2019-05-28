@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mhc.yunxian.dao.LogisticsMapper">
+    <resultMap id="BaseResultMap" type="com.mhc.yunxian.dao.model.Logistics">
+        <id column="logistics_id" jdbcType="BIGINT" property="logisticsId"/>
+        <result column="user_open_id" jdbcType="VARCHAR" property="userOpenId"/>
+        <result column="order_num" jdbcType="VARCHAR" property="orderNum"/>
+        <result column="dragon_num" jdbcType="VARCHAR" property="dragonNum"/>
+        <result column="logistics_company_id" jdbcType="BIGINT" property="logisticsCompanyId"/>
+        <result column="logistics_code" jdbcType="VARCHAR" property="logisticsCode"/>
+        <result column="logistics_company" jdbcType="VARCHAR" property="logisticsCompany"/>
+        <result column="logistics_content" jdbcType="VARCHAR" property="logisticsContent"/>
+        <result column="out_logistics_status" jdbcType="INTEGER" property="outLogisticsStatus"/>
+        <result column="out_logistics_content" jdbcType="VARCHAR" property="outLogisticsContent"/>
+        <result column="logistics_status" jdbcType="INTEGER" property="logisticsStatus"/>
+        <result column="is_deleted" jdbcType="BIT" property="isDeleted"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified"/>
+        <result column="json_attribute" jdbcType="VARCHAR" property="jsonAttribute"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    logistics_id, user_open_id, order_num, dragon_num, logistics_company_id,logistics_code, logistics_company,
+    logistics_content, out_logistics_status, out_logistics_content, logistics_status, 
+    is_deleted, gmt_create, gmt_modified, json_attribute
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_logistics
+        where logistics_id = #{logisticsId,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from tbl_logistics
+    where logistics_id = #{logisticsId,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="com.mhc.yunxian.dao.model.Logistics">
+    insert into tbl_logistics (logistics_id, user_open_id, order_num, 
+      dragon_num, logistics_company_id, logistics_code,logistics_company,
+      logistics_content, out_logistics_status, out_logistics_content, 
+      logistics_status, is_deleted, gmt_create, 
+      gmt_modified, json_attribute)
+    values (#{logisticsId,jdbcType=BIGINT}, #{userOpenId,jdbcType=VARCHAR}, #{orderNum,jdbcType=VARCHAR},
+      #{dragonNum,jdbcType=VARCHAR}, #{logisticsCompanyId,jdbcType=BIGINT},  #{logisticsCode,jdbcType=VARCHAR},#{logisticsCompany,jdbcType=VARCHAR},
+      #{logisticsContent,jdbcType=VARCHAR}, #{outLogisticsStatus,jdbcType=INTEGER}, #{outLogisticsContent,jdbcType=VARCHAR}, 
+      #{logisticsStatus,jdbcType=INTEGER}, #{isDeleted,jdbcType=BIT}, #{gmtCreate,jdbcType=TIMESTAMP}, 
+      #{gmtModified,jdbcType=TIMESTAMP}, #{jsonAttribute,jdbcType=VARCHAR})
+  </insert>
+    <insert id="insertSelective" parameterType="com.mhc.yunxian.dao.model.Logistics">
+        insert into tbl_logistics
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="logisticsId != null">
+                logistics_id,
+            </if>
+            <if test="userOpenId != null">
+                user_open_id,
+            </if>
+            <if test="orderNum != null">
+                order_num,
+            </if>
+            <if test="dragonNum != null">
+                dragon_num,
+            </if>
+            <if test="logisticsCompanyId != null">
+                logistics_company_id,
+            </if>
+            <if test="logisticsCode != null">
+                logistics_code,
+            </if>
+            <if test="logisticsCompany != null">
+                logistics_company,
+            </if>
+            <if test="logisticsContent != null">
+                logistics_content,
+            </if>
+            <if test="outLogisticsStatus != null">
+                out_logistics_status,
+            </if>
+            <if test="outLogisticsContent != null">
+                out_logistics_content,
+            </if>
+            <if test="logisticsStatus != null">
+                logistics_status,
+            </if>
+            <if test="isDeleted != null">
+                is_deleted,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModified != null">
+                gmt_modified,
+            </if>
+            <if test="jsonAttribute != null">
+                json_attribute,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="logisticsId != null">
+                #{logisticsId,jdbcType=BIGINT},
+            </if>
+            <if test="userOpenId != null">
+                #{userOpenId,jdbcType=VARCHAR},
+            </if>
+            <if test="orderNum != null">
+                #{orderNum,jdbcType=VARCHAR},
+            </if>
+            <if test="dragonNum != null">
+                #{dragonNum,jdbcType=VARCHAR},
+            </if>
+            <if test="logisticsCompanyId != null">
+                #{logisticsCompanyId,jdbcType=BIGINT},
+            </if>
+            <if test="logisticsCode != null">
+                #{logisticsCode,jdbcType=VARCHAR},
+            </if>
+            <if test="logisticsCompany != null">
+                #{logisticsCompany,jdbcType=VARCHAR},
+            </if>
+            <if test="logisticsContent != null">
+                #{logisticsContent,jdbcType=VARCHAR},
+            </if>
+            <if test="outLogisticsStatus != null">
+                #{outLogisticsStatus,jdbcType=INTEGER},
+            </if>
+            <if test="outLogisticsContent != null">
+                #{outLogisticsContent,jdbcType=VARCHAR},
+            </if>
+            <if test="logisticsStatus != null">
+                #{logisticsStatus,jdbcType=INTEGER},
+            </if>
+            <if test="isDeleted != null">
+                #{isDeleted,jdbcType=BIT},
+            </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModified != null">
+                #{gmtModified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="jsonAttribute != null">
+                #{jsonAttribute,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.mhc.yunxian.dao.model.Logistics">
+        update tbl_logistics
+        <set>
+            <if test="userOpenId != null">
+                user_open_id = #{userOpenId,jdbcType=VARCHAR},
+            </if>
+            <if test="orderNum != null">
+                order_num = #{orderNum,jdbcType=VARCHAR},
+            </if>
+            <if test="dragonNum != null">
+                dragon_num = #{dragonNum,jdbcType=VARCHAR},
+            </if>
+            <if test="logisticsCompanyId != null">
+                logistics_company_id = #{logisticsCompanyId,jdbcType=BIGINT},
+            </if>
+            <if test="logisticsCode != null">
+                logistics_code = #{logisticsCode,jdbcType=VARCHAR},
+            </if>
+            <if test="logisticsCompany != null">
+                logistics_company = #{logisticsCompany,jdbcType=VARCHAR},
+            </if>
+            <if test="logisticsContent != null">
+                logistics_content = #{logisticsContent,jdbcType=VARCHAR},
+            </if>
+            <if test="outLogisticsStatus != null">
+                out_logistics_status = #{outLogisticsStatus,jdbcType=INTEGER},
+            </if>
+            <if test="outLogisticsContent != null">
+                out_logistics_content = #{outLogisticsContent,jdbcType=VARCHAR},
+            </if>
+            <if test="logisticsStatus != null">
+                logistics_status = #{logisticsStatus,jdbcType=INTEGER},
+            </if>
+            <if test="isDeleted != null">
+                is_deleted = #{isDeleted,jdbcType=BIT},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModified != null">
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="jsonAttribute != null">
+                json_attribute = #{jsonAttribute,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where logistics_id = #{logisticsId,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.mhc.yunxian.dao.model.Logistics">
+    update tbl_logistics
+    set user_open_id = #{userOpenId,jdbcType=VARCHAR},
+      order_num = #{orderNum,jdbcType=VARCHAR},
+      dragon_num = #{dragonNum,jdbcType=VARCHAR},
+      logistics_company_id = #{logisticsCompanyId,jdbcType=BIGINT},
+      logistics_code = #{logisticsCode,jdbcType=VARCHAR},
+      logistics_company = #{logisticsCompany,jdbcType=VARCHAR},
+      logistics_content = #{logisticsContent,jdbcType=VARCHAR},
+      out_logistics_status = #{outLogisticsStatus,jdbcType=INTEGER},
+      out_logistics_content = #{outLogisticsContent,jdbcType=VARCHAR},
+      logistics_status = #{logisticsStatus,jdbcType=INTEGER},
+      is_deleted = #{isDeleted,jdbcType=BIT},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
+      json_attribute = #{jsonAttribute,jdbcType=VARCHAR}
+    where logistics_id = #{logisticsId,jdbcType=BIGINT}
+  </update>
+
+    <select id="getLogisticsInfoByOrderNum" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_logistics
+        where order_num = #{orderNum,jdbcType=VARCHAR}
+    </select>
+</mapper>

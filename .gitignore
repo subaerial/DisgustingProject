@@ -1,0 +1,42 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+/target
+/.idea
+/classes
+
+*.iml
+*/*.iml
+*/*/*.iml
+
+yunxian.log.path_IS_UNDEFINED/*
+logs/*
+
+build-code.jar
+buildCode.sh
+mysql.jar
+mvnw
+mvnw.cmd
+mybatisConfig.xml
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.springBeans
+
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.ipr
+
+### NetBeans ###
+nbproject/private/
+build/
+nbbuild/
+nbdist/
+.nb-gradle/
+
+api/src/main/resources/static/node_modules
+

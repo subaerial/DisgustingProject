@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mhc.yunxian.dao.GoodsInfoDao">
+    <resultMap id="BaseResultMap" type="com.mhc.yunxian.dao.model.GoodsInfo">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="goods_num" property="goodsNum" jdbcType="VARCHAR"/>
+        <result column="goods_name" property="goodsName" jdbcType="VARCHAR"/>
+        <result column="price" property="price" jdbcType="INTEGER"/>
+        <result column="total_number" property="totalNumber" jdbcType="INTEGER"/>
+        <result column="goods_img" property="goodsImg" jdbcType="VARCHAR"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="sales_volume" property="salesVolume" jdbcType="INTEGER"/>
+        <result column="specification" property="specification" jdbcType="VARCHAR"/>
+        <result column="creator_open_id" property="creatorOpenId" jdbcType="VARCHAR"/>
+        <result column="deleted" property="deleted" jdbcType="TINYINT"/>
+
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, goods_num, goods_name, price, total_number, goods_img, update_time, create_time, sales_volume,
+        specification,creator_open_id,deleted
+    </sql>
+
+
+    <select id="selectGoods" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_goods_info
+        where goods_num = #{goodsNum,jdbcType=VARCHAR}
+    </select>
+
+
+    <select id="getGoodsListByUser" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_goods_info
+        where goods_num in
+        (select b.goods_num from tbl_dragon_goods b where b.dragon_num in
+        (select a.dragon_num from tbl_dragon_info a where a.openid = #{openId,jdbcType=VARCHAR}))
+        order by create_time desc
+    </select>
+    <select id="queryGoodsListByCreatorOpenId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_goods_info
+        where creator_open_id=#{openId}
+    </select>
+
+    <insert id="insertGoods" parameterType="com.mhc.yunxian.dao.model.GoodsInfo">
+        insert into tbl_goods_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="goodsNum != null">
+                goods_num,
+            </if>
+            <if test="goodsName != null">
+                goods_name,
+            </if>
+            <if test="price != null">
+                price,
+            </if>
+            <if test="totalNumber != null">
+                total_number,
+            </if>
+            <if test="goodsImg != null">
+                goods_img,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="salesVolume != null">
+                sales_volume,
+            </if>
+            <if test="specification != null">
+                specification,
+            </if>
+            <if test="creatorOpenId != null">
+                creator_open_id,
+            </if>
+            <if test="deleted != null">
+                deleted
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="goodsNum != null">
+                #{goodsNum,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsName != null">
+                #{goodsName,jdbcType=VARCHAR},
+            </if>
+            <if test="price != null">
+                #{price,jdbcType=INTEGER},
+            </if>
+            <if test="totalNumber != null">
+                #{totalNumber,jdbcType=INTEGER},
+            </if>
+            <if test="goodsImg != null">
+                #{goodsImg,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="salesVolume != null">
+                #{salesVolume,jdbcType=INTEGER},
+            </if>
+            <if test="specification != null">
+                #{specification,jdbcType=VARCHAR},
+            </if>
+            <if test="creatorOpenId != null">
+                #{creatorOpenId,jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null">
+                #{deleted,jdbcType=TINYINT}
+            </if>
+        </trim>
+    </insert>
+
+
+    <update id="updateGoods" parameterType="com.mhc.yunxian.dao.model.GoodsInfo">
+        update tbl_goods_info
+        <set>
+            <if test="goodsName != null">
+                goods_name = #{goodsName,jdbcType=VARCHAR},
+            </if>
+            <if test="price != null">
+                price = #{price,jdbcType=INTEGER},
+            </if>
+            <if test="totalNumber != null">
+                total_number = #{totalNumber,jdbcType=INTEGER},
+            </if>
+            <if test="goodsImg != null">
+                goods_img = #{goodsImg,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="salesVolume != null">
+                sales_volume = #{salesVolume,jdbcType=INTEGER},
+            </if>
+            <if test="specification != null">
+                specification = #{specification,jdbcType=VARCHAR},
+            </if>
+            <if test="specification != null">
+                creator_open_id = #{creatorOpenId,jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null">
+                deleted = #{deleted,jdbcType=TINYINT}
+            </if>
+        </set>
+        where goods_num = #{goodsNum,jdbcType=VARCHAR}
+    </update>
+
+    <update id="updateByGoodsId" parameterType="com.mhc.yunxian.dao.model.GoodsInfo">
+        update tbl_goods_info
+        <set>
+            <if test="goodsName != null">
+                goods_name = #{goodsName,jdbcType=VARCHAR},
+            </if>
+            <if test="price != null">
+                price = #{price,jdbcType=INTEGER},
+            </if>
+            <if test="totalNumber != null">
+                total_number = #{totalNumber,jdbcType=INTEGER},
+            </if>
+            <if test="goodsImg != null">
+                goods_img = #{goodsImg,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="salesVolume != null">
+                sales_volume = #{salesVolume,jdbcType=INTEGER},
+            </if>
+            <if test="specification != null">
+                specification = #{specification,jdbcType=VARCHAR},
+            </if>
+            <if test="specification != null">
+                creator_open_id = #{creatorOpenId,jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null">
+                deleted = #{deleted,jdbcType=TINYINT}
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+
+    <delete id="deleteGoods" parameterType="java.lang.String">
+        delete from tbl_goods_info
+        where goods_num = #{goodsNum,jdbcType=VARCHAR}
+    </delete>
+
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_goods_info
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from tbl_goods_info
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insertSelective" parameterType="com.mhc.yunxian.dao.model.GoodsInfo">
+        insert into tbl_goods_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="goodsNum != null">
+                goods_num,
+            </if>
+            <if test="goodsName != null">
+                goods_name,
+            </if>
+            <if test="price != null">
+                price,
+            </if>
+            <if test="totalNumber != null">
+                total_number,
+            </if>
+            <if test="goodsImg != null">
+                goods_img,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="salesVolume != null">
+                sales_volume,
+            </if>
+            <if test="specification != null">
+                specification,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="goodsNum != null">
+                #{goodsNum,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsName != null">
+                #{goodsName,jdbcType=VARCHAR},
+            </if>
+            <if test="price != null">
+                #{price,jdbcType=DECIMAL},
+            </if>
+            <if test="totalNumber != null">
+                #{totalNumber,jdbcType=INTEGER},
+            </if>
+            <if test="goodsImg != null">
+                #{goodsImg,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="salesVolume != null">
+                #{salesVolume,jdbcType=INTEGER},
+            </if>
+            <if test="specification != null">
+                #{specification,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <select id="queryGoodsByGoodsNums" resultMap="BaseResultMap" parameterType="java.util.Set">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_goods_info
+        <where>
+            <if test="set != null and set.size > 0 ">
+                goods_num in
+                <foreach collection="set" open="(" separator="," close=")" item="val">
+                    ${val}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+
+    <select id="countBy" resultType="com.mhc.yunxian.vo.CountGoodsVO" >
+        select count(*) as goodsCount, sum(ifnull(sales_volume,0)) as total from tbl_goods_info
+    </select>
+
+    <select id="queryAll" resultMap="BaseResultMap">
+        select * from tbl_goods_info
+    </select>
+
+    <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select * from tbl_goods_info where id=#{id}
+    </select>
+</mapper>

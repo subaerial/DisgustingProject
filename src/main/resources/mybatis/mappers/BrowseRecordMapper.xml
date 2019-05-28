@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mhc.yunxian.dao.BrowseRecordDao">
+    <resultMap id="BaseResultMap" type="com.mhc.yunxian.dao.model.BrowseRecord">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="user_id" property="userId" jdbcType="INTEGER"/>
+        <result column="dragon_num" property="dragonNum" jdbcType="VARCHAR"/>
+        <result column="seller_openid" property="sellerOpenid" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, user_id, dragon_num, create_time, seller_openid
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_browse_record
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectSellerOpenid" resultType="java.lang.String">
+	  SELECT
+	a.seller_openid
+FROM
+	(
+	SELECT
+		max( create_time ) AS create_time,
+		seller_openid
+	FROM
+		tbl_browse_record
+	WHERE
+		user_id = #{userId,jdbcType=INTEGER}
+	GROUP BY
+		seller_openid
+	) a
+ORDER BY
+	create_time DESC
+
+  </select>
+
+    <select id="findTodayRecord" resultMap="BaseResultMap" parameterType="com.mhc.yunxian.dao.model.BrowseRecord">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_browse_record
+        where dragon_num = #{dragonNum,jdbcType=VARCHAR}
+        and user_id = #{userId,jdbcType=INTEGER}
+        and to_days(create_time) = to_days(now())
+    </select>
+
+    <select id="findBrowseRecord" resultMap="BaseResultMap" parameterType="com.mhc.yunxian.dao.model.BrowseRecord">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_browse_record
+        where 1=1
+        <if test="dragonNum != null ">
+           and dragon_num = #{dragonNum,jdbcType=VARCHAR}
+        </if>
+        <if test="userId != null ">
+            and user_id = #{userId,jdbcType=VARCHAR}
+        </if>
+        <if test="sellerOpenid != null ">
+            and seller_openid = #{sellerOpenid,jdbcType=VARCHAR}
+        </if>
+    </select>
+
+    <!--<select id="findDragonBrowseRecord" resultMap="BaseResultMap" parameterType="com.mhc.yunxian.dao.model.BrowseRecord" >-->
+    <!--select-->
+    <!--<include refid="Base_Column_List" />-->
+    <!--from tbl_browse_record-->
+    <!--<where>-->
+    <!--<if test="dra != null">-->
+    <!--nick_name LIKE CONCAT('%',#{buyerName},'%')-->
+    <!--</if>-->
+    <!--<if test="buyerPhone != null">-->
+    <!--and addr_phone LIKE CONCAT('%',#{buyerPhone},'%')-->
+    <!--</if>-->
+    <!--<if test="sellerName != null">-->
+    <!--and sellerName LIKE CONCAT('%',#{sellerName},'%')-->
+    <!--</if>-->
+    <!--<if test="sellerPhone != null">-->
+    <!--and sellerPhone LIKE CONCAT('%',#{sellerPhone},'%')-->
+    <!--</if>-->
+    <!--<if test="status != null">-->
+    <!--and order_status = #{status,jdbcType=INTEGER}-->
+    <!--</if>-->
+    <!--</where>-->
+
+    <!--order by id DESC-->
+    <!--</select>-->
+
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tbl_browse_record
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.mhc.yunxian.dao.model.BrowseRecord">
+    insert into tbl_browse_record (id, user_id, dragon_num, 
+      create_time)
+    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{dragonNum,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+    <insert id="insertSelective" parameterType="com.mhc.yunxian.dao.model.BrowseRecord">
+        insert into tbl_browse_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="dragonNum != null">
+                dragon_num,
+            </if>
+            <if test="sellerOpenid != null">
+                seller_openid,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="dragonNum != null">
+                #{dragonNum,jdbcType=VARCHAR},
+            </if>
+            <if test="sellerOpenid != null">
+                #{sellerOpenid,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.mhc.yunxian.dao.model.BrowseRecord">
+        update tbl_browse_record
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="dragonNum != null">
+                dragon_num = #{dragonNum,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.mhc.yunxian.dao.model.BrowseRecord">
+    update tbl_browse_record
+    set user_id = #{userId,jdbcType=INTEGER},
+      dragon_num = #{dragonNum,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+    <select id="findLatestBrowseRecord" parameterType="com.mhc.yunxian.dao.query.BrowseRecordQuery" resultMap="BaseResultMap">
+        <!--先排序后去重-->
+        select * from (
+            select distinct record.*
+            from tbl_browse_record record
+            left join tbl_dragon_info dragon
+            on record.dragon_num = dragon.dragon_num
+            where 1=1
+            <if test="dragonNum != null ">
+                and record.dragon_num = #{dragonNum,jdbcType=VARCHAR}
+            </if>
+            <if test="userId != null ">
+                and record.user_id = #{userId,jdbcType=VARCHAR}
+            </if>
+            <if test="sellerOpenid != null ">
+                and record.seller_openid = #{sellerOpenid,jdbcType=VARCHAR}
+            </if>
+            and dragon.dragon_status = 0
+            order by record.create_time desc
+        ) as newTable
+        group by newTable.dragon_num
+        order by newTable.create_time desc
+        limit #{offset},#{pageSize}
+    </select>
+</mapper>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mhc.yunxian.dao.WxAdminDao">
+  <resultMap id="BaseResultMap" type="com.mhc.yunxian.dao.model.WxAdmin">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="openid" jdbcType="VARCHAR" property="openid" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="nick_name" jdbcType="VARCHAR" property="nickName" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+    <result column="head_img" jdbcType="VARCHAR" property="headImg" />
+    <result column="unionid" jdbcType="VARCHAR" property="unionid" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, openid, create_time, nick_name, `state`, head_img, unionid
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from tbl_wx_admin
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectByOpenid" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from tbl_wx_admin
+    where openid = #{openid,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAdmin" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from tbl_wx_admin
+    where state = 1
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tbl_wx_admin
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.mhc.yunxian.dao.model.WxAdmin">
+    insert into tbl_wx_admin (id, openid, create_time,
+      nick_name, `state`, head_img,
+      unionid)
+    values (#{id,jdbcType=INTEGER}, #{openid,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+      #{nickName,jdbcType=VARCHAR}, #{state,jdbcType=INTEGER}, #{headImg,jdbcType=VARCHAR},
+      #{unionid,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.mhc.yunxian.dao.model.WxAdmin">
+    insert into tbl_wx_admin
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="openid != null">
+        openid,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="nickName != null">
+        nick_name,
+      </if>
+      <if test="state != null">
+        `state`,
+      </if>
+      <if test="headImg != null">
+        head_img,
+      </if>
+      <if test="unionid != null">
+        unionid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="openid != null">
+        #{openid,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="nickName != null">
+        #{nickName,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="headImg != null">
+        #{headImg,jdbcType=VARCHAR},
+      </if>
+      <if test="unionid != null">
+        #{unionid,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.mhc.yunxian.dao.model.WxAdmin">
+    update tbl_wx_admin
+    <set>
+      <if test="openid != null">
+        openid = #{openid,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="nickName != null">
+        nick_name = #{nickName,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null">
+        `state` = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="headImg != null">
+        head_img = #{headImg,jdbcType=VARCHAR},
+      </if>
+      <if test="unionid != null">
+        unionid = #{unionid,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.mhc.yunxian.dao.model.WxAdmin">
+    update tbl_wx_admin
+    set openid = #{openid,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      nick_name = #{nickName,jdbcType=VARCHAR},
+      `state` = #{state,jdbcType=INTEGER},
+      head_img = #{headImg,jdbcType=VARCHAR},
+      unionid = #{unionid,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

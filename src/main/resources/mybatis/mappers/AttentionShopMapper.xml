@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mhc.yunxian.dao.AttentionShopMapper">
+    <resultMap id="BaseResultMap" type="com.mhc.yunxian.dao.model.AttentionShop">
+        <id column="attention_shop_id" jdbcType="BIGINT" property="attentionShopId"/>
+        <result column="user_id" jdbcType="BIGINT" property="userId"/>
+        <result column="shop_id" jdbcType="BIGINT" property="shopId"/>
+        <result column="shop_head_picture" jdbcType="VARCHAR" property="shopHeadPicture"/>
+        <result column="shop_name" jdbcType="VARCHAR" property="shopName"/>
+        <result column="shopkeeper_nickname" jdbcType="VARCHAR" property="shopkeeperNickname"/>
+        <result column="shopkeeper_open_id" jdbcType="VARCHAR" property="shopkeeperOpenId"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+
+    </resultMap>
+    <sql id="Base_Column_List">
+        attention_shop_id, user_id, shop_id, shop_head_picture, shop_name, shopkeeper_nickname,
+        shopkeeper_open_id, status,gmt_create, gmt_modified
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_attention_shop
+        where attention_shop_id = #{attentionShopId,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from tbl_attention_shop
+        where attention_shop_id = #{attentionShopId,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.mhc.yunxian.dao.model.AttentionShop">
+        insert into tbl_attention_shop (attention_shop_id, user_id, shop_id,
+        shop_head_picture, shop_name, shopkeeper_nickname,
+        shopkeeper_open_id, status, gmt_create, gmt_modified
+        )
+        values (#{attentionShopId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{shopId,jdbcType=BIGINT},
+        #{shopHeadPicture,jdbcType=VARCHAR}, #{shopName,jdbcType=VARCHAR}, #{shopkeeperNickname,jdbcType=VARCHAR},
+        #{shopkeeperOpenId,jdbcType=VARCHAR},#{status,jdbcType=INTEGER} ,#{gmtCreate,jdbcType=TIMESTAMP},
+        #{gmtModified,jdbcType=TIMESTAMP}
+        )
+    </insert>
+    <insert id="insertSelective" parameterType="com.mhc.yunxian.dao.model.AttentionShop">
+        insert into tbl_attention_shop
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="attentionShopId != null">
+                attention_shop_id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="shopId != null">
+                shop_id,
+            </if>
+            <if test="shopHeadPicture != null">
+                shop_head_picture,
+            </if>
+            <if test="shopName != null">
+                shop_name,
+            </if>
+            <if test="shopkeeperNickname != null">
+                shopkeeper_nickname,
+            </if>
+            <if test="shopkeeperOpenId != null">
+                shopkeeper_open_id,
+            </if>
+            <if test="status !=null">
+                status,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModified != null">
+                gmt_modified,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="attentionShopId != null">
+                #{attentionShopId,jdbcType=BIGINT},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="shopId != null">
+                #{shopId,jdbcType=BIGINT},
+            </if>
+            <if test="shopHeadPicture != null">
+                #{shopHeadPicture,jdbcType=VARCHAR},
+            </if>
+            <if test="shopName != null">
+                #{shopName,jdbcType=VARCHAR},
+            </if>
+            <if test="shopkeeperNickname != null">
+                #{shopkeeperNickname,jdbcType=VARCHAR},
+            </if>
+            <if test="shopkeeperOpenId != null">
+                #{shopkeeperOpenId,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=INTEGER},
+            </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModified != null">
+                #{gmtModified,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.mhc.yunxian.dao.model.AttentionShop">
+        update tbl_attention_shop
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="shopId != null">
+                shop_id = #{shopId,jdbcType=BIGINT},
+            </if>
+            <if test="shopHeadPicture != null">
+                shop_head_picture = #{shopHeadPicture,jdbcType=VARCHAR},
+            </if>
+            <if test="shopName != null">
+                shop_name = #{shopName,jdbcType=VARCHAR},
+            </if>
+            <if test="shopkeeperNickname != null">
+                shopkeeper_nickname = #{shopkeeperNickname,jdbcType=VARCHAR},
+            </if>
+            <if test="shopkeeperOpenId != null">
+                shopkeeper_open_id = #{shopkeeperOpenId,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModified != null">
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where attention_shop_id = #{attentionShopId,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.mhc.yunxian.dao.model.AttentionShop">
+        update tbl_attention_shop
+        set user_id = #{userId,jdbcType=BIGINT},
+        shop_id = #{shopId,jdbcType=BIGINT},
+        shop_head_picture = #{shopHeadPicture,jdbcType=VARCHAR},
+        shop_name = #{shopName,jdbcType=VARCHAR},
+        shopkeeper_nickname = #{shopkeeperNickname,jdbcType=VARCHAR},
+        shopkeeper_open_id = #{shopkeeperOpenId,jdbcType=VARCHAR},
+        status=#{status,jdbcType=INTEGER},
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+        gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        where attention_shop_id = #{attentionShopId,jdbcType=BIGINT}
+    </update>
+
+    <sql id="Query_Condition">
+        <trim suffixOverrides="AND">
+            <if test="shopkeeperOpenId !=null ">
+                shopkeeper_open_id=#{shopkeeperOpenId} AND
+            </if>
+            <if test="shopId !=null ">
+                shop_id=#{shopId} AND
+            </if>
+            <if test="userId !=null ">
+                user_id=#{userId} AND
+            </if>
+            <if test="status != null">
+                status = #{status} AND
+            </if>
+            <if test="shopkeeperOpenId !=null ">
+                shopkeeper_open_id=#{shopkeeperOpenId} AND
+            </if>
+        </trim>
+    </sql>
+
+    <sql id="Order_By_And_Limit">
+        <choose>
+            <when test="orderBySql != null ">
+                order by #{orderBySql}
+            </when>
+            <otherwise>
+                order by #{gmtCreate}
+            </otherwise>
+        </choose>
+        limit #{offset},#{pageSize}
+    </sql>
+    <select id="queryAttentionShopList" resultMap="BaseResultMap" parameterType="com.mhc.yunxian.bean.request.query.ShopInfoQuery">
+        select
+        <include refid="Base_Column_List"/>
+        from tbl_attention_shop
+        <where>
+            <include refid="Query_Condition"/>
+        </where>
+        <include refid="Order_By_And_Limit"/>
+    </select>
+
+</mapper>

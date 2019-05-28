@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mhc.yunxian.dao.UserBankInfoDao">
+  <resultMap id="BaseResultMap" type="com.mhc.yunxian.dao.model.UserBankInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="openid" jdbcType="VARCHAR" property="openid" />
+    <result column="account_name" jdbcType="VARCHAR" property="accountName" />
+    <result column="account_no" jdbcType="VARCHAR" property="accountNo" />
+    <result column="bank_id" jdbcType="INTEGER" property="bankId" />
+    <result column="city_id" jdbcType="INTEGER" property="cityId" />
+    <result column="limit" jdbcType="INTEGER" property="limit" />
+    <result column="used_limit" jdbcType="INTEGER" property="usedLimit" />
+  </resultMap>
+
+  <resultMap id="UserBankInfoVOMap" type="com.mhc.yunxian.bean.UserBankInfoVO">
+    <result column="account_name" jdbcType="VARCHAR" property="accountName" />
+    <result column="account_no" jdbcType="VARCHAR" property="accountNo" />
+    <result column="bank_name" jdbcType="VARCHAR" property="bankName" />
+    <result column="province" jdbcType="VARCHAR" property="province" />
+    <result column="city" jdbcType="VARCHAR" property="city" />
+    <result column="limit" jdbcType="INTEGER" property="limit" />
+    <result column="used_limit" jdbcType="INTEGER" property="usedLimit" />
+  </resultMap>
+
+
+  <sql id="Base_Column_List">
+    id, openid, account_name, account_no, bank_id, city_id, `limit`, used_limit
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tbl_user_bank_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="getBankInfo" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from tbl_user_bank_info
+    where openid = #{openid,jdbcType=VARCHAR}
+  </select>
+  <select id="selectUserBankInfoVOByOpenid" parameterType="java.lang.String" resultMap="UserBankInfoVOMap">
+  select a.account_no,account_name,b.bank_name,
+         a.limit,a.used_limit,
+   CASE WHEN c.parent_code = 0 THEN c.`name`
+				 ELSE (select d.name from tbl_city d where d.`code` = c.parent_code) END
+				 as province,
+   CASE WHEN c.parent_code = 0 THEN ""
+				 ELSE c.`name` END
+				 as city
+				 from tbl_user_bank_info a left join tbl_bank b on a.bank_id = b.id
+				 left JOIN tbl_city c on a.city_id = c.code
+				 where a.openid = #{openid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tbl_user_bank_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.mhc.yunxian.dao.model.UserBankInfo">
+    insert into tbl_user_bank_info (id, openid, account_name, 
+      account_no, bank_id, city_id, 
+      `limit`, used_limit)
+    values (#{id,jdbcType=INTEGER}, #{openid,jdbcType=VARCHAR}, #{accountName,jdbcType=VARCHAR}, 
+      #{accountNo,jdbcType=VARCHAR}, #{bankId,jdbcType=INTEGER}, #{cityId,jdbcType=INTEGER}, 
+      #{limit,jdbcType=INTEGER}, #{usedLimit,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.mhc.yunxian.dao.model.UserBankInfo">
+    insert into tbl_user_bank_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="openid != null">
+        openid,
+      </if>
+      <if test="accountName != null">
+        account_name,
+      </if>
+      <if test="accountNo != null">
+        account_no,
+      </if>
+      <if test="bankId != null">
+        bank_id,
+      </if>
+      <if test="cityId != null">
+        city_id,
+      </if>
+      <if test="limit != null">
+        `limit`,
+      </if>
+      <if test="usedLimit != null">
+        used_limit,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="openid != null">
+        #{openid,jdbcType=VARCHAR},
+      </if>
+      <if test="accountName != null">
+        #{accountName,jdbcType=VARCHAR},
+      </if>
+      <if test="accountNo != null">
+        #{accountNo,jdbcType=VARCHAR},
+      </if>
+      <if test="bankId != null">
+        #{bankId,jdbcType=INTEGER},
+      </if>
+      <if test="cityId != null">
+        #{cityId,jdbcType=INTEGER},
+      </if>
+      <if test="limit != null">
+        #{limit,jdbcType=INTEGER},
+      </if>
+      <if test="usedLimit != null">
+        #{usedLimit,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.mhc.yunxian.dao.model.UserBankInfo">
+    update tbl_user_bank_info
+    <set>
+      <if test="openid != null">
+        openid = #{openid,jdbcType=VARCHAR},
+      </if>
+      <if test="accountName != null">
+        account_name = #{accountName,jdbcType=VARCHAR},
+      </if>
+      <if test="accountNo != null">
+        account_no = #{accountNo,jdbcType=VARCHAR},
+      </if>
+      <if test="bankId != null">
+        bank_id = #{bankId,jdbcType=INTEGER},
+      </if>
+      <if test="cityId != null">
+        city_id = #{cityId,jdbcType=INTEGER},
+      </if>
+      <if test="limit != null">
+        `limit` = #{limit,jdbcType=INTEGER},
+      </if>
+      <if test="usedLimit != null">
+        used_limit = #{usedLimit,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.mhc.yunxian.dao.model.UserBankInfo">
+    update tbl_user_bank_info
+    set openid = #{openid,jdbcType=VARCHAR},
+      account_name = #{accountName,jdbcType=VARCHAR},
+      account_no = #{accountNo,jdbcType=VARCHAR},
+      bank_id = #{bankId,jdbcType=INTEGER},
+      city_id = #{cityId,jdbcType=INTEGER},
+      `limit` = #{limit,jdbcType=INTEGER},
+      used_limit = #{usedLimit,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
